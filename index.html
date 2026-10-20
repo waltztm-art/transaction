@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>노통수연합 개인거래 장터 v1.8</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-red-500 selection:text-white">
+
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-600 p-2.5 rounded-xl text-white shadow-md shadow-red-900/50 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-400 to-yellow-300">
+                        노통수연합 공식 장터
+                    </h1>
+                    <p class="text-xs text-slate-400">리니지클래식 혈원 전용 실시간 안전 개인거래소 (v1.8)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openModal('registerModal')" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-red-900/30 transition transform active:scale-95 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-plus-circle"></i> 물품/아덴 등록하기
+                </button>
+                <a href="https://waltztm-art.github.io/Aden/" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-amber-400 font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-2 text-sm shadow-md">
+                    <i class="fa-solid fa-calculator"></i> 아덴계산기
+                </a>
+                <button onclick="loadListings()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> 새로고침
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+        
+        <!-- Stats & Info Banner -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="bg-amber-500/10 text-amber-400 p-3.5 rounded-xl">
+                    <i class="fa-solid fa-coins text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">아덴 시세 / 거래</p>
+                    <h3 class="text-lg font-bold text-slate-100" id="statAdenCount">0건 등록됨</h3>
+                </div>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="bg-red-500/10 text-red-400 p-3.5 rounded-xl">
+                    <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">일반 아이템 거래</p>
+                    <h3 class="text-lg font-bold text-slate-100" id="statItemCount">0건 등록됨</h3>
+                </div>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="bg-emerald-500/10 text-emerald-400 p-3.5 rounded-xl">
+                    <i class="fa-solid fa-handshake text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">진행중인 거래</p>
+                    <h3 class="text-lg font-bold text-slate-100" id="statActiveCount">0건</h3>
+                </div>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="bg-blue-500/10 text-blue-400 p-3.5 rounded-xl">
+                    <i class="fa-solid fa-users text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">혈원 접속 상태</p>
+                    <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 연결됨
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Section -->
+        <div class="bg-slate-800/50 border border-slate-700/50 p-4 rounded-2xl mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <button onclick="setFilter('ALL')" id="filterBtnALL" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-red-600 text-white shadow-md">전체보기</button>
+                <button onclick="setFilter('ADEN')" id="filterBtnADEN" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-700 text-slate-300 hover:bg-slate-600">아덴 판매/구입</button>
+                <button onclick="setFilter('ITEM')" id="filterBtnITEM" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-700 text-slate-300 hover:bg-slate-600">아이템</button>
+                <button onclick="setFilter('SELL')" id="filterBtnSELL" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-700 text-slate-300 hover:bg-slate-600">판매만</button>
+                <button onclick="setFilter('BUY')" id="filterBtnBUY" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-700 text-slate-300 hover:bg-slate-600">구입만</button>
+            </div>
+            <div class="w-full md:w-72 relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="searchInput" oninput="filterListings()" placeholder="물품명, 아이디 검색..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+            </div>
+        </div>
+
+        <!-- Listings Grid Container -->
+        <div id="listingsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Cards inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <div class="text-slate-600 text-6xl mb-4">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-lg font-medium text-slate-400">등록된 거래 물품이 없습니다.</h3>
+            <p class="text-sm text-slate-500 mt-1">상단의 '물품/아덴 등록하기' 버튼을 눌러 첫 거래를 시작해보세요!</p>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-12 text-center text-sm text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 노통수연합 Lineage Classic Guild. All rights reserved.</p>
+            <p class="text-red-400 font-semibold tracking-wide">Made by 폭군하스 v1.6</p>
+        </div>
+    </footer>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all">
+            <div class="bg-slate-800/60 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-store text-red-500"></i> 새 거래 물품 / 아덴 등록 (v1.8)
+                </h3>
+                <button onclick="closeModal('registerModal')" class="text-slate-400 hover:text-slate-200 transition text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="registerForm" onsubmit="handleSubmit(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">거래 구분</label>
+                        <select id="tradeType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500 transition">
+                            <option value="SELL">판매 (팝니다)</option>
+                            <option value="BUY">구매 (삽니다)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">카테고리</label>
+                        <select id="category" onchange="handleCategoryChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500 transition">
+                            <option value="ITEM">일반 아이템 / 장비</option>
+                            <option value="ADEN">아덴 (Aden)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">혈원 닉네임 (아이디)</label>
+                        <input type="text" id="sellerId" required placeholder="예: 폭군하스" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">비밀번호 (수정/삭제용)</label>
+                        <input type="password" id="postPassword" required placeholder="비밀번호 4자리 이상" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">연락처 / 디스코드</label>
+                    <input type="text" id="contactInfo" required placeholder="예: 디스코드명" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                </div>
+
+                <div id="itemNameWrapper">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">물품명</label>
+                    <input type="text" id="itemName" placeholder="예: +9 일본도, 마법서(이뮨)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase" id="quantityLabel">수량</label>
+                        <input type="text" id="quantity" required placeholder="예: 1 또는 1억 아덴" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">희망 가격 (원 / 아덴)</label>
+                        <input type="text" id="price" required placeholder="예: 50,000원 또는 5,000만아덴" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">상세 메모 / 옵션</label>
+                    <textarea id="memo" rows="2" placeholder="거래 장소, 흥정 여부 등을 적어주세요." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500 transition resize-none"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('registerModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2.5 rounded-xl transition text-sm">취소</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-red-900/30 transition text-sm">등록 완료</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <h3 class="text-lg font-bold text-slate-100 mb-2">거래 진행상황 변경</h3>
+            <p class="text-xs text-slate-400 mb-4">작성 시 설정한 비밀번호를 입력해야 변경 가능합니다.</p>
+            <input type="hidden" id="activeListingId">
+            
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호 확인</label>
+                <input type="password" id="checkPasswordInput" placeholder="비밀번호 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-red-500 transition">
+            </div>
+
+            <div class="space-y-2 mb-6">
+                <button onclick="updateStatusValue('진행중')" class="w-full text-left bg-slate-800 hover:bg-slate-700 px-3 py-2.5 rounded-xl border border-slate-700 font-medium text-amber-400 flex items-center justify-between transition text-sm">
+                    <span><i class="fa-solid fa-clock mr-2"></i> 거래 진행중</span>
+                    <span class="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-md">대기중</span>
+                </button>
+                <button onclick="updateStatusValue('예약중')" class="w-full text-left bg-slate-800 hover:bg-slate-700 px-3 py-2.5 rounded-xl border border-slate-700 font-medium text-blue-400 flex items-center justify-between transition text-sm">
+                    <span><i class="fa-solid fa-bookmark mr-2"></i> 예약중 (구매자 대기)</span>
+                    <span class="text-[10px] bg-blue-500/20 px-2 py-0.5 rounded-md">예약</span>
+                </button>
+                <button onclick="updateStatusValue('거래완료')" class="w-full text-left bg-slate-800 hover:bg-slate-700 px-3 py-2.5 rounded-xl border border-slate-700 font-medium text-emerald-400 flex items-center justify-between transition text-sm">
+                    <span><i class="fa-solid fa-check-circle mr-2"></i> 거래 완료</span>
+                    <span class="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-md">완료</span>
+                </button>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal('statusModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2 rounded-xl transition text-sm">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <h3 class="text-lg font-bold text-slate-100 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-red-500"></i> 거래글 삭제
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">등록 시 설정한 비밀번호를 입력하여 삭제를 확인하세요.</p>
+            <input type="hidden" id="deleteListingId">
+            
+            <div class="mb-5">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호 입력</label>
+                <input type="password" id="deletePasswordInput" placeholder="비밀번호 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500 transition">
+            </div>
+
+            <div class="flex gap-2">
+                <button type="button" onclick="closeModal('deleteModal')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2.5 rounded-xl transition text-sm">취소</button>
+                <button type="button" onclick="confirmDelete()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-red-900/30 transition text-sm">삭제 확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default Mock Data
+        let listings = [];
+
+        let currentFilter = 'ALL';
+
+        // Initialize application on window load
+        window.onload = function() {
+            const saved = localStorage.getItem('notongsu_listings_v18');
+            if (saved) {
+                try {
+                    listings = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to parse local storage data', e);
+                }
+            }
+            renderListings();
+            updateStats();
+        };
+
+        function saveToStorage() {
+            localStorage.setItem('notongsu_listings_v18', JSON.stringify(listings));
+            updateStats();
+        }
+
+        // Modal Controls
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            if (modalId === 'statusModal') {
+                document.getElementById('checkPasswordInput').value = '';
+            }
+            if (modalId === 'deleteModal') {
+                document.getElementById('deletePasswordInput').value = '';
+            }
+        }
+
+        function handleCategoryChange() {
+            const category = document.getElementById('category').value;
+            const itemNameInput = document.getElementById('itemName');
+            const itemNameWrapper = document.getElementById('itemNameWrapper');
+            
+            if (category === 'ADEN') {
+                itemNameInput.value = '아덴 거래';
+                itemNameWrapper.style.display = 'none';
+            } else {
+                itemNameInput.value = '';
+                itemNameWrapper.style.display = 'block';
+            }
+        }
+
+        // Form Submission
+        function handleSubmit(e) {
+            e.preventDefault();
+            const tradeType = document.getElementById('tradeType').value;
+            const category = document.getElementById('category').value;
+            const sellerId = document.getElementById('sellerId').value.trim();
+            const password = document.getElementById('postPassword').value;
+            const contactInfo = document.getElementById('contactInfo').value.trim();
+            let itemName = document.getElementById('itemName').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const memo = document.getElementById('memo').value.trim();
+
+            if (category === 'ADEN') {
+                itemName = quantity + ' 아덴';
+            }
+
+            const newListing = {
+                id: Date.now().toString(),
+                tradeType,
+                category,
+                sellerId,
+                password,
+                contactInfo,
+                itemName,
+                quantity,
+                price,
+                memo,
+                status: '진행중',
+                createdAt: new Date().toISOString()
+            };
+
+            listings.unshift(newListing);
+            saveToStorage();
+            renderListings();
+            closeModal('registerModal');
+            document.getElementById('registerForm').reset();
+        }
+
+        // Filter Controls
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            ['ALL', 'ADEN', 'ITEM', 'SELL', 'BUY'].forEach(f => {
+                const btn = document.getElementById(`filterBtn${f}`);
+                if (btn) {
+                    if (f === filter) {
+                        btn.className = 'px-4 py-2 rounded-xl text-sm font-semibold transition bg-red-600 text-white shadow-md';
+                    } else {
+                        btn.className = 'px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-700 text-slate-300 hover:bg-slate-600';
+                    }
+                }
+            });
+
+            renderListings();
+        }
+
+        // Render Listings
+        function renderListings() {
+            const container = document.getElementById('listingsContainer');
+            const emptyState = document.getElementById('emptyState');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+            let filtered = listings.filter(item => {
+                if (currentFilter === 'ADEN' && item.category !== 'ADEN') return false;
+                if (currentFilter === 'ITEM' && item.category !== 'ITEM') return false;
+                if (currentFilter === 'SELL' && item.tradeType !== 'SELL') return false;
+                if (currentFilter === 'BUY' && item.tradeType !== 'BUY') return false;
+
+                if (searchQuery) {
+                    const matchName = item.itemName.toLowerCase().includes(searchQuery);
+                    const matchSeller = item.sellerId.toLowerCase().includes(searchQuery);
+                    return matchName || matchSeller;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            container.innerHTML = filtered.map(item => {
+                const isSell = item.tradeType === 'SELL';
+                const badgeColor = isSell ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+                const typeText = isSell ? '판매 (팝니다)' : '구매 (삽니다)';
+                
+                let statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                if (item.status === '예약중') statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+                if (item.status === '거래완료') statusColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+
+                return `
+                    <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 shadow-lg flex flex-col justify-between hover:border-slate-600 transition group">
+                        <div>
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <span class="px-3 py-1 rounded-lg text-xs font-bold border ${badgeColor}">
+                                    ${typeText}
+                                </span>
+                                <button onclick="openStatusModal('${item.id}')" class="px-2.5 py-1 rounded-lg text-xs font-semibold border ${statusColor} hover:opacity-80 transition cursor-pointer">
+                                    ${item.status} <i class="fa-solid fa-pen text-[10px] ml-1"></i>
+                                </button>
+                            </div>
+                            
+                            <h3 class="text-lg font-bold text-slate-100 mb-1 group-hover:text-red-400 transition">${escapeHtml(item.itemName)}</h3>
+                            
+                            <div class="space-y-1.5 my-3 text-sm text-slate-300">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 text-xs">수량</span>
+                                    <span class="font-medium">${escapeHtml(item.quantity)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 text-xs">희망 가격</span>
+                                    <span class="font-bold text-amber-400">${escapeHtml(item.price)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 text-xs">등록 혈원</span>
+                                    <span class="font-medium text-slate-200"><i class="fa-solid fa-user-shield text-xs text-red-500 mr-1"></i>${escapeHtml(item.sellerId)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500 text-xs">연락처</span>
+                                    <span class="text-slate-300 text-xs bg-slate-900 px-2 py-1 rounded border border-slate-700">${escapeHtml(item.contactInfo)}</span>
+                                </div>
+                            </div>
+
+                            ${item.memo ? `<p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 mt-2 mb-4">${escapeHtml(item.memo)}</p>` : '<div class="mb-4"></div>'}
+                        </div>
+
+                        <div class="flex gap-2 pt-2 border-t border-slate-700/60">
+                            <button onclick="copyContact('${escapeHtml(item.contactInfo)}')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-copy"></i> 연락처 복사
+                            </button>
+                            <button onclick="promptDelete('${item.id}')" class="bg-slate-900 hover:bg-red-900/40 text-slate-400 hover:text-red-400 py-2 px-3 rounded-xl text-xs transition border border-slate-700 hover:border-red-900">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterListings() {
+            renderListings();
+        }
+
+        function updateStats() {
+            const adenCount = listings.filter(i => i.category === 'ADEN').length;
+            const itemCount = listings.filter(i => i.category === 'ITEM').length;
+            const activeCount = listings.filter(i => i.status !== '거래완료').length;
+
+            document.getElementById('statAdenCount').innerText = `${adenCount}건 등록됨`;
+            document.getElementById('statItemCount').innerText = `${itemCount}건 등록됨`;
+            document.getElementById('statActiveCount').innerText = `${activeCount}건`;
+        }
+
+        // Status Modal Handling with Password Check
+        function openStatusModal(id) {
+            document.getElementById('activeListingId').value = id;
+            document.getElementById('checkPasswordInput').value = '';
+            openModal('statusModal');
+        }
+
+        function updateStatusValue(newStatus) {
+            const id = document.getElementById('activeListingId').value;
+            const inputPassword = document.getElementById('checkPasswordInput').value;
+            const item = listings.find(i => i.id === id);
+
+            if (!item) return;
+
+            if (item.password && item.password !== inputPassword) {
+                alertMessage('비밀번호가 일치하지 않습니다!');
+                return;
+            } else if (!item.password && inputPassword !== '1234') {
+                alertMessage('비밀번호가 일치하지 않습니다!');
+                return;
+            }
+
+            item.status = newStatus;
+            saveToStorage();
+            renderListings();
+            closeModal('statusModal');
+            alertMessage(`상태가 [${newStatus}] (으)로 변경되었습니다.`);
+        }
+
+        // Secure Delete Modal Handling
+        function promptDelete(id) {
+            document.getElementById('deleteListingId').value = id;
+            document.getElementById('deletePasswordInput').value = '';
+            openModal('deleteModal');
+        }
+
+        function confirmDelete() {
+            const id = document.getElementById('deleteListingId').value;
+            const inputPassword = document.getElementById('deletePasswordInput').value;
+            const item = listings.find(i => i.id === id);
+
+            if (!item) return;
+
+            if (item.password && item.password !== inputPassword) {
+                alertMessage('비밀번호가 일치하지 않아 삭제할 수 없습니다.');
+                return;
+            } else if (!item.password && inputPassword !== '1234') {
+                alertMessage('비밀번호가 일치하지 않아 삭제할 수 없습니다.');
+                return;
+            }
+
+            listings = listings.filter(i => i.id !== id);
+            saveToStorage();
+            renderListings();
+            closeModal('deleteModal');
+            alertMessage('거래글이 삭제되었습니다.');
+        }
+
+        function copyContact(text) {
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            alertMessage(`연락처가 복사되었습니다: ${text}`);
+        }
+
+        function alertMessage(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-800 text-slate-100 px-4 py-3 rounded-xl border border-slate-700 shadow-2xl z-50 text-sm flex items-center gap-2 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
