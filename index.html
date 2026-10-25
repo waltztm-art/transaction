@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>노통수연합 개인거래 장터 v6.5</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter & Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100 selection:bg-red-500 selection:text-white">
+
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-amber-600 flex items-center justify-center shadow-lg shadow-red-900/40 border border-red-400/30">
+                    <i class="fa-solid fa-shield-halved text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-400 to-yellow-300">
+                        노통수연합 공식 장터
+                    </h1>
+                    <p class="text-xs text-slate-400">리니지클래식 혈원 전용 실시간 안전 개인거래소 (v6.5)</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto justify-center md:justify-end">
+                <button onclick="openModal('registerModal')" class="flex-1 sm:flex-none bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-red-900/40 flex items-center justify-center gap-2 transition transform active:scale-95 text-sm">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>물품/아덴 등록하기</span>
+                </button>
+                <button onclick="openModal('calcModal')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 font-semibold px-3.5 py-2.5 rounded-xl flex items-center gap-2 transition text-sm">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span>아덴계산기</span>
+                </button>
+                <button onclick="openModal('feedbackModal')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3.5 py-2.5 rounded-xl shadow-lg shadow-indigo-900/30 flex items-center gap-2 transition text-sm cursor-pointer">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>피드백</span>
+                </button>
+                <button onclick="openModal('donateModal')" class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold px-3.5 py-2.5 rounded-xl shadow-lg shadow-amber-900/30 flex items-center gap-2 transition text-sm" title="따뜻한 커피 한잔 후원하기">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <span>따뜻한 커피 한잔</span>
+                </button>
+                <button onclick="openAdminPasswordModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2.5 rounded-xl shadow-lg shadow-emerald-900/30 flex items-center gap-2 transition text-sm">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>관리자 설정</span>
+                </button>
+                <button onclick="manualRefresh()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition text-sm" title="새로고침">
+                    <i class="fa-solid fa-rotate" id="refreshIcon"></i>
+                    <span class="hidden sm:inline">새로고침</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- Notice Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-red-950/30 to-slate-900 border border-red-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+            <div class="flex items-start sm:items-center gap-3">
+                <span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0 mt-0.5 sm:mt-0">필독 공지</span>
+                <p class="text-sm text-slate-200 leading-relaxed">
+                    노통수연합 혈원 간 거래 장터입니다. 사기 방지를 위해 <strong class="text-amber-400">인게임 혈맹창 닉네임과 디스코드/오픈톡</strong>을 반드시 교차 확인하세요!
+                </p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                <span id="syncStatusBadge" class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    실시간 DB 연동중
+                </span>
+            </div>
+        </div>
+
+        <!-- Statistics Bar (Interactive Filter Cards) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <div onclick="filterByStatCard('ALL')" id="statCard_ALL" class="bg-slate-900/90 hover:bg-slate-800/90 border-2 border-slate-700 p-4 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 active:scale-95 shadow-md" title="클릭하여 전체 등록 물품 보기">
+                <div>
+                    <p class="text-xs text-slate-300 font-semibold flex items-center gap-1">전체 등록 물품 <i class="fa-solid fa-hand-pointer text-[10px] opacity-60"></i></p>
+                    <p class="text-2xl font-black text-white mt-1" id="statTotal">0</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-200 border border-slate-700">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+            </div>
+            <div onclick="filterByStatCard('SELL')" id="statCard_SELL" class="bg-gradient-to-br from-red-950/40 to-slate-900/90 hover:from-red-900/50 hover:to-slate-800 border-2 border-red-500/30 p-4 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 active:scale-95 shadow-md" title="클릭하여 팝니다(판매중) 물품만 보기">
+                <div>
+                    <p class="text-xs text-red-400 font-bold flex items-center gap-1">팝니다 (판매중) <i class="fa-solid fa-hand-pointer text-[10px] opacity-70"></i></p>
+                    <p class="text-2xl font-black text-red-400 mt-1" id="statSell">0</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+            </div>
+            <div onclick="filterByStatCard('BUY')" id="statCard_BUY" class="bg-gradient-to-br from-blue-950/40 to-slate-900/90 hover:from-blue-900/50 hover:to-slate-800 border-2 border-blue-500/30 p-4 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 active:scale-95 shadow-md" title="클릭하여 삽니다(구매중) 물품만 보기">
+                <div>
+                    <p class="text-xs text-blue-400 font-bold flex items-center gap-1">삽니다 (구매중) <i class="fa-solid fa-hand-pointer text-[10px] opacity-70"></i></p>
+                    <p class="text-2xl font-black text-blue-400 mt-1" id="statBuy">0</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+            </div>
+            <div onclick="filterByStatCard('ADEN')" id="statCard_ADEN" class="bg-gradient-to-br from-amber-950/40 to-slate-900/90 hover:from-amber-900/50 hover:to-slate-800 border-2 border-amber-500/30 p-4 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 active:scale-95 shadow-md" title="클릭하여 아덴 거래 물품만 보기">
+                <div>
+                    <p class="text-xs text-amber-400 font-bold flex items-center gap-1">아덴 거래 <i class="fa-solid fa-hand-pointer text-[10px] opacity-70"></i></p>
+                    <p class="text-2xl font-black text-amber-400 mt-1" id="statAden">0</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters & Search -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="setFilterType('ALL')" id="filter_ALL" class="filter-btn bg-red-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition">전체보기</button>
+                <button onclick="setFilterType('판매 (팝니다)')" id="filter_SELL" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">팝니다</button>
+                <button onclick="setFilterType('구매 (삽니다)')" id="filter_BUY" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">삽니다</button>
+                <div class="h-5 w-px bg-slate-700 mx-1 hidden sm:block"></div>
+                <button onclick="setFilterCategory('ALL')" id="cat_ALL" class="cat-btn bg-slate-700 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition">모든 카테고리</button>
+                <button onclick="setFilterCategory('ADEN')" id="cat_ADEN" class="cat-btn bg-slate-800 hover:bg-slate-700 text-slate-400 px-3 py-1.5 rounded-lg text-xs font-medium transition">💰 아덴</button>
+                <button onclick="setFilterCategory('WEAPON')" id="cat_WEAPON" class="cat-btn bg-slate-800 hover:bg-slate-700 text-slate-400 px-3 py-1.5 rounded-lg text-xs font-medium transition">⚔️ 무기/장비</button>
+                <button onclick="setFilterCategory('ETC')" id="cat_ETC" class="cat-btn bg-slate-800 hover:bg-slate-700 text-slate-400 px-3 py-1.5 rounded-lg text-xs font-medium transition">📦 기타/주문서</button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div class="relative flex-grow sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" oninput="renderListings()" placeholder="아이템명, 혈원명 검색..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-red-500 transition">
+                </div>
+                <label class="flex items-center gap-2 text-xs text-slate-300 bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl cursor-pointer select-none shrink-0">
+                    <input type="checkbox" id="hideCompletedToggle" onchange="renderListings()" class="rounded text-red-600 focus:ring-0">
+                    <span>완료 숨기기</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Listings Grid -->
+        <div id="listingsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamically populated -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-12 text-center text-sm text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 노통수연합 Lineage Classic Guild. All rights reserved.</p>
+            <p class="text-red-400 font-semibold tracking-wide">Made by 폭군하스 v6.5</p>
+        </div>
+    </footer>
+
+    <!-- Developer Donate Modal -->
+    <div id="donateModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-amber-500/40 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6 relative">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-mug-hot"></i> 따뜻한 커피 한잔 후원하기
+                </h3>
+                <button onclick="closeModal('donateModal')" class="text-slate-400 hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-xs text-slate-300 leading-relaxed text-center">
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-amber-500/30 p-5 rounded-2xl shadow-inner space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400 text-xl">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <p class="text-slate-200 font-medium text-sm leading-relaxed">
+                        "프로그램이 마음에 드신다면, 더 나은 개발을 위해 따뜻한 커피 한잔이면 충분합니다!" ☕
+                    </p>
+                    <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl">
+                        <p class="text-slate-400 text-[11px] mb-1">후원 계좌 정보</p>
+                        <p class="text-amber-400 font-bold text-sm tracking-wide">카카오뱅크 3333-01-1181905 장*일</p>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500">보내주신 후원금은 장터 서버 유지 및 기능 업그레이드에 소중하게 사용됩니다. 감사합니다!</p>
+            </div>
+            <div class="mt-5 flex justify-end">
+                <button onclick="closeModal('donateModal')" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div id="adminPasswordModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-emerald-400"></i> 관리자 인증
+                </h3>
+                <button onclick="closeModal('adminPasswordModal')" class="text-slate-400 hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">관리자 설정에 접근하려면 비밀번호를 입력하세요.</p>
+            <input type="password" id="adminPasswordInput" onkeydown="if(event.key==='Enter') verifyAdminPassword()" placeholder="비밀번호 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 mb-4 focus:outline-none focus:border-emerald-500">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModal('adminPasswordModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold">취소</button>
+                <button onclick="verifyAdminPassword()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl text-xs font-bold">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Sheet Sync Status Modal (Admin Settings) -->
+    <div id="sheetModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel text-emerald-400"></i> 관리자 설정 (구글 시트 실시간 DB 연동)
+                </h3>
+                <button onclick="closeModal('sheetModal')" class="text-slate-400 hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+                <div class="bg-slate-800/90 border border-slate-700 p-3.5 rounded-xl space-y-2">
+                    <p class="font-bold text-emerald-400"><i class="fa-solid fa-link mr-1"></i> 연결된 구글 시트 탭 바로가기 (분리 운영)</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <a href="https://docs.google.com/spreadsheets/d/13NUSTpLh4Gf45LvQ0nZhKrV2HTGlOivwm7Cz1izYasU/edit?gid=1021457796#gid=1021457796" target="_blank" class="bg-slate-900 hover:bg-slate-850 border border-emerald-500/40 rounded-lg p-2.5 flex items-center justify-between text-blue-400 hover:underline">
+                            <span>📋 1. 거래목록 시트 탭 (gid=1021457796)</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                        <a href="https://docs.google.com/spreadsheets/d/13NUSTpLh4Gf45LvQ0nZhKrV2HTGlOivwm7Cz1izYasU/edit?gid=279613400#gid=279613400" target="_blank" class="bg-slate-900 hover:bg-slate-850 border border-indigo-500/40 rounded-lg p-2.5 flex items-center justify-between text-indigo-400 hover:underline">
+                            <span>💬 2. 피드백 전용 시트 탭 (gid=279613400)</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-950/30 border border-emerald-500/40 p-3.5 rounded-xl space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block font-bold text-emerald-300 text-xs">구글 Apps Script 웹앱 URL (수정 및 저장 가능)</label>
+                        <span id="webhookUrlBadge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">수정 가능</span>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <input type="text" id="webhookUrlInput" value="https://script.google.com/macros/s/AKfycbyyXjNKatvezgqZoRxr1yW83LNww_yi9cEwkYKF6PeGdIw7gqSEKC8KwpSOYHuHkCFsxQ/exec" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-950/90 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-[11px] text-emerald-400 font-mono focus:outline-none">
+                        <button type="button" onclick="saveWebhookUrl()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs shrink-0">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> URL 저장
+                        </button>
+                        <button type="button" onclick="resetWebhookUrl()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold px-3 py-2 rounded-lg transition text-xs shrink-0" title="기본 URL로 복원">
+                            기본값
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        <button onclick="testWebhookConnection()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs">
+                            <i class="fa-solid fa-paper-plane mr-1"></i> 시트 전송 테스트
+                        </button>
+                        <button onclick="fetchFromGoogleSheet(false)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3.5 py-2 rounded-lg transition text-xs">
+                            <i class="fa-solid fa-cloud-arrow-down mr-1"></i> 지금 즉시 시트 DB 다시 불러오기
+                        </button>
+                    </div>
+                    <p id="webhookTestStatus" class="text-[11px] text-amber-300 pt-1">※ 장터 시작 시 및 30초마다 구글 시트(gid=1021457796)의 목록을 자동으로 불러옵니다.</p>
+
+                    <details class="bg-slate-900/90 rounded-lg p-2.5 border border-slate-700/80 mt-2">
+                        <summary class="cursor-pointer font-semibold text-amber-400 hover:text-amber-300">Apps Script 코드 보기 (중복 덮어쓰기, 실시간 댓글 및 비밀번호 DB 연동)</summary>
+                        <textarea readonly rows="16" class="w-full bg-slate-950 border border-slate-800 rounded p-2 font-mono text-[10px] text-slate-200 focus:outline-none select-all">function cleanItemKey(val) {
+  return String(val || '').trim().replace(/^'+/, '');
+}
+
+function getSheetByGidOrName(ss, gid, fallbackName) {
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    if (String(sheets[i].getSheetId()) === String(gid)) return sheets[i];
+  }
+  var sheet = ss.getSheetByName(fallbackName);
+  if (!sheet) sheet = ss.insertSheet(fallbackName);
+  return sheet;
+}
+
+function doPost(e) {
+  var ss = SpreadsheetApp.openById('13NUSTpLh4Gf45LvQ0nZhKrV2HTGlOivwm7Cz1izYasU');
+  var data = JSON.parse(e.postData.contents);
+  var type = data.sheetType || data.type;
+
+  if (type === 'FEEDBACK') {
+    var fbSheet = getSheetByGidOrName(ss, '279613400', '피드백');
+    if (fbSheet.getLastRow() === 0) {
+      fbSheet.appendRow(['등록일시', '구분', '혈원아이디', '피드백 내용']);
+    }
+    fbSheet.appendRow([data.date || new Date().toLocaleString('ko-KR', {timeZone:'Asia/Seoul'}), '피드백', data.author || '', data.content || '']);
+  } else if (type === 'COMMENT') {
+    var mainSheet = getSheetByGidOrName(ss, '1021457796', '거래목록');
+    var rows = mainSheet.getDataRange().getValues();
+    var targetSeller = String(data.sellerId || '').trim();
+    var targetItem = cleanItemKey(data.itemName);
+    for (var r = 1; r < rows.length; r++) {
+      var sId = String(rows[r][4] || '').trim();
+      var iName = cleanItemKey(rows[r][5]);
+      if (sId === targetSeller && iName === targetItem) {
+        if (data.comments) {
+          mainSheet.getRange(r + 1, 12).setValue(data.comments);
+        }
+        break;
+      }
+    }
+  } else if (type === 'DELETE') {
+    var mainSheet = getSheetByGidOrName(ss, '1021457796', '거래목록');
+    var rows = mainSheet.getDataRange().getValues();
+    var delSeller = String(data.sellerId || '').trim();
+    var delItem = cleanItemKey(data.itemName);
+    for (var r = 1; r < rows.length; r++) {
+      var sId = String(rows[r][4] || '').trim();
+      var iName = cleanItemKey(rows[r][5]);
+      if (sId === delSeller && iName === delItem) {
+        var range = mainSheet.getRange(r + 1, 1, 1, mainSheet.getLastColumn());
+        range.setFontLine('line-through');
+        range.setFontColor('#ef4444');
+        mainSheet.getRange(r + 1, 10).setValue('삭제됨(취소선)');
+      }
+    }
+  } else {
+    var mainSheet = getSheetByGidOrName(ss, '1021457796', '거래목록');
+    if (mainSheet.getLastRow() === 0) {
+      mainSheet.appendRow(['거래일시', '구분', '거래유형', '카테고리', '혈원아이디', '물품명', '수량', '희망가격', '연락처', '상태', '메모', '댓글목록', '비밀번호']);
+    }
+    var itemNameVal = String(data.itemName || '').trim();
+    if (itemNameVal.startsWith('+') || itemNameVal.startsWith('-') || itemNameVal.startsWith('=')) {
+      itemNameVal = "'" + itemNameVal;
+    }
+
+    var searchSeller = String(data.originalSellerId || data.sellerId || '').trim();
+    var searchItem = cleanItemKey(data.originalItemName || data.itemName);
+
+    var rows = mainSheet.getDataRange().getValues();
+    var foundRow = -1;
+    for (var r = 1; r < rows.length; r++) {
+      var rowStatus = String(rows[r][9] || '');
+      if (rowStatus.indexOf('삭제') !== -1) continue;
+      var sId = String(rows[r][4] || '').trim();
+      var iName = cleanItemKey(rows[r][5]);
+      if (sId === searchSeller && iName === searchItem) {
+        foundRow = r + 1;
+        break;
+      }
+    }
+
+    var rowValues = [
+      data.date || new Date().toLocaleString('ko-KR', {timeZone:'Asia/Seoul'}),
+      'LISTING',
+      data.tradeType || '',
+      data.category || '',
+      data.sellerId || '',
+      itemNameVal,
+      data.quantity || '',
+      data.price || '',
+      data.contactInfo || '',
+      data.status || '진행중',
+      data.memo || '',
+      data.comments || '[]',
+      data.password || ''
+    ];
+
+    if (foundRow !== -1) {
+      mainSheet.getRange(foundRow, 1, 1, rowValues.length).setValues([rowValues]);
+    } else {
+      mainSheet.appendRow(rowValues);
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({result: 'success'})).setMimeType(ContentService.MimeType.JSON);
+}</textarea>
+                    </details>
+                </div>
+            </div>
+
+            <div class="mt-5 flex justify-end">
+                <button onclick="closeModal('sheetModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-5 py-2 rounded-xl text-xs transition">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-indigo-400"></i> 건의사항 / 피드백 남기기
+                </h3>
+                <button type="button" onclick="closeModal('feedbackModal')" class="text-slate-400 hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">혈원 닉네임</label>
+                    <input type="text" id="feedbackAuthor" required placeholder="예: 폭군하스" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">내용</label>
+                    <textarea id="feedbackContent" required rows="4" placeholder="개선점이나 추가했으면 하는 기능을 적어주세요." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('feedbackModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold">취소</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-lg shadow-indigo-900/40">피드백 전송</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div id="calcModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-amber-400"></i> 아덴 시세 계산기
+                </h3>
+                <button onclick="closeModal('calcModal')" class="text-slate-400 hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-amber-400 font-bold mb-1">1만 아덴당 시세 (원)</label>
+                    <input type="number" id="calcRatePer10k" oninput="runAdenCalc('rate')" placeholder="예: 700" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">거래할 아덴 수량 (만 아덴 단위)</label>
+                    <input type="number" id="calcAdenAmount" oninput="runAdenCalc('aden')" placeholder="예: 100 (100만 아덴)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">또는 금액 (원) 입력 시 아덴 역산</label>
+                    <input type="number" id="calcWonAmount" oninput="runAdenCalc('won')" placeholder="예: 70000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="bg-slate-800/90 border border-amber-500/30 rounded-xl p-4 text-center">
+                    <p class="text-xs text-slate-400">계산된 결과</p>
+                    <p class="text-2xl font-black text-amber-400 mt-1" id="calcResultText">0 원 / 1만 아덴</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all">
+            <div class="bg-slate-800/60 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-store text-red-500"></i> 새 거래 물품 / 아덴 등록 (v6.5)
+                </h3>
+                <button onclick="closeModal('registerModal')" class="text-slate-400 hover:text-slate-200 transition text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="registerForm" onsubmit="submitListing(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">거래 구분</label>
+                        <select id="tradeType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                            <option value="판매 (팝니다)">🔴 판매 (팝니다)</option>
+                            <option value="구매 (삽니다)">🔵 구매 (삽니다)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">카테고리</label>
+                        <select id="category" onchange="handleCategoryChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                            <option value="ITEM">⚔️ 무기/방어구/장비</option>
+                            <option value="ADEN">💰 아덴 (머니)</option>
+                            <option value="ETC">📦 주문서/기타 소모품</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">인게임 혈원 닉네임</label>
+                        <input type="text" id="sellerId" required placeholder="예: 폭군하스" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">연락처 (인게임 귓말/카톡)</label>
+                        <input type="text" id="contactInfo" required placeholder="예: 인게임 귓말 / 오픈톡" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                    </div>
+                </div>
+
+                <div id="itemNameWrapper">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">아이템 / 물품명 (특수문자 및 + 기호 사용 가능)</label>
+                    <input type="text" id="itemName" required placeholder="예: +7 일본도, 축복받은 갑옷 마법 주문서" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1" id="quantityLabel">수량</label>
+                        <input type="text" id="quantity" required value="1" placeholder="예: 1자루, 500만" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">희망 가격 (숫자만 입력)</label>
+                        <div class="space-y-1.5">
+                            <div class="flex gap-1.5">
+                                <input type="text" id="priceNumInput" oninput="validatePriceInput()" required placeholder="예: 135" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                                <input type="hidden" id="price">
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="togglePriceScale('thousand')" id="unitBtn_thousand" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition">천</button>
+                                <button type="button" onclick="togglePriceScale('tenThousand')" id="unitBtn_tenThousand" class="flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition">만</button>
+                                <button type="button" onclick="togglePriceCurrency('아덴')" id="unitBtn_aden" class="flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition">아덴</button>
+                                <button type="button" onclick="togglePriceCurrency('원')" id="unitBtn_won" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition">원</button>
+                            </div>
+                            <p id="priceErrorMsg" class="text-[11px] text-red-400 hidden">⚠️ 숫자만 입력해주세요!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">상세 메모 (선택)</label>
+                    <textarea id="memo" rows="2" placeholder="접속 시간대나 흥정 가능 여부 등을 적어주세요." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">글 수정/삭제용 비밀번호</label>
+                    <input type="password" id="password" required placeholder="숫자 4자리 등 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-red-500">
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('registerModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-sm transition">취소</button>
+                    <button type="submit" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-red-900/40 text-sm transition">등록 완료</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <h3 class="text-lg font-bold text-slate-100 mb-1">거래 진행상황 변경</h3>
+            <p class="text-xs text-slate-400 mb-4">작성 시 설정한 비밀번호를 입력해야 변경 가능합니다.</p>
+            <input type="hidden" id="targetDocId">
+            
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호 확인</label>
+                <input type="password" id="checkPasswordInput" placeholder="비밀번호 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500 transition">
+            </div>
+
+            <div class="space-y-2 mb-4">
+                <button type="button" onclick="updateListingStatus('진행중')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-amber-500/50 transition">
+                    <span class="flex items-center gap-2 text-sm font-bold text-amber-400"><i class="fa-solid fa-clock"></i> 거래 진행중</span>
+                    <span class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">대기중</span>
+                </button>
+                <button type="button" onclick="updateListingStatus('예약중')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-blue-500/50 transition">
+                    <span class="flex items-center gap-2 text-sm font-bold text-blue-400"><i class="fa-solid fa-bookmark"></i> 예약중 (구매자 대기)</span>
+                    <span class="text-[11px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">예약</span>
+                </button>
+                <button type="button" onclick="updateListingStatus('거래완료')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-emerald-500/50 transition">
+                    <span class="flex items-center gap-2 text-sm font-bold text-emerald-400"><i class="fa-solid fa-circle-check"></i> 거래 완료</span>
+                    <span class="text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">완료</span>
+                </button>
+                <button type="button" onclick="openEditFromStatusModal()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-indigo-500/50 transition">
+                    <span class="flex items-center gap-2 text-sm font-bold text-indigo-400"><i class="fa-solid fa-pen-to-square"></i> 내용 수정</span>
+                    <span class="text-[11px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">수정</span>
+                </button>
+            </div>
+
+            <button type="button" onclick="closeModal('statusModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2.5 rounded-xl transition text-sm">닫기</button>
+        </div>
+    </div>
+
+    <!-- Edit Listing Content Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all">
+            <div class="bg-slate-800/60 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-indigo-400"></i> 거래글 내용 수정 (v6.5)
+                </h3>
+                <button onclick="closeModal('editModal')" class="text-slate-400 hover:text-slate-200 transition text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="editForm" onsubmit="submitEditListing(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <input type="hidden" id="editDocId">
+                <input type="hidden" id="editOriginalSellerId">
+                <input type="hidden" id="editOriginalItemName">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">거래 구분</label>
+                        <select id="editTradeType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                            <option value="판매 (팝니다)">🔴 판매 (팝니다)</option>
+                            <option value="구매 (삽니다)">🔵 구매 (삽니다)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">카테고리</label>
+                        <select id="editCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                            <option value="ITEM">⚔️ 무기/방어구/장비</option>
+                            <option value="ADEN">💰 아덴 (머니)</option>
+                            <option value="ETC">📦 주문서/기타 소모품</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">인게임 혈원 닉네임</label>
+                        <input type="text" id="editSellerId" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">연락처</label>
+                        <input type="text" id="editContactInfo" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">아이템 / 물품명</label>
+                    <input type="text" id="editItemName" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">수량</label>
+                        <input type="text" id="editQuantity" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">희망 가격 (숫자만 입력)</label>
+                        <div class="space-y-1.5">
+                            <div class="flex gap-1.5">
+                                <input type="text" id="editPriceNumInput" oninput="validateEditPriceInput()" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+                                <input type="hidden" id="editPrice">
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="toggleEditPriceScale('thousand')" id="editUnitBtn_thousand" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition">천</button>
+                                <button type="button" onclick="toggleEditPriceScale('tenThousand')" id="editUnitBtn_tenThousand" class="flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition">만</button>
+                                <button type="button" onclick="toggleEditPriceCurrency('아덴')" id="editUnitBtn_aden" class="flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition">아덴</button>
+                                <button type="button" onclick="toggleEditPriceCurrency('원')" id="editUnitBtn_won" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition">원</button>
+                            </div>
+                            <p id="editPriceErrorMsg" class="text-[11px] text-red-400 hidden">⚠️ 숫자만 입력해주세요!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">상세 메모</label>
+                    <textarea id="editMemo" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('editModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-sm transition">취소</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-900/40 text-sm transition">수정 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <h3 class="text-lg font-bold text-slate-100 mb-1">거래글 삭제</h3>
+            <p class="text-xs text-slate-400 mb-4">거래글을 삭제 하시겠습니까? 비밀번호를 입력해주세요.</p>
+            <input type="hidden" id="deleteDocId">
+            
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">비밀번호 확인</label>
+                <input type="password" id="deletePasswordInput" placeholder="비밀번호 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-red-500 transition">
+            </div>
+
+            <div class="flex gap-2">
+                <button type="button" onclick="closeModal('deleteModal')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2.5 rounded-xl transition text-sm">취소</button>
+                <button type="button" onclick="confirmDelete()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-red-900/30 transition text-sm">삭제 확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment Reservation Password Modal -->
+    <div id="reserveCommentModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+            <h3 class="text-lg font-bold text-slate-100 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-bookmark text-blue-400"></i> 댓글 혈원과 예약하기
+            </h3>
+            <p class="text-xs text-slate-400 mb-3" id="reserveCommentTargetText">선택한 댓글 작성자와 거래를 예약중으로 변경합니다.</p>
+            <input type="hidden" id="reserveListingDocId">
+            <input type="hidden" id="reserveCommentIdx">
+            
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">글 비밀번호 확인</label>
+                <input type="password" id="reservePasswordInput" placeholder="작성자 비밀번호 입력" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500 transition">
+            </div>
+
+            <div class="flex gap-2">
+                <button type="button" onclick="closeModal('reserveCommentModal')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2.5 rounded-xl transition text-sm">취소</button>
+                <button type="button" onclick="confirmCommentReservation()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-blue-900/30 transition text-sm">예약 확정</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-800 border border-slate-700 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-medium">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toastMessage">알림 메시지</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db = null;
+        let auth = null;
+        let listings = [];
+        let firestoreListings = [];
+        let sheetListingsCache = [];
+        const deletedSheetKeys = new Set();
+        const userPasswordMap = new Map();
+        const commentDrafts = new Map();
+
+        let currentFilterType = 'ALL';
+        let currentFilterCategory = 'ALL';
+        let currentPriceThousand = false;
+        let currentPriceTenThousand = true;
+        let currentPriceCurrency = '아덴';
+
+        let editPriceThousand = false;
+        let editPriceTenThousand = true;
+        let editPriceCurrency = '아덴';
+
+        const SHEET_ID = '13NUSTpLh4Gf45LvQ0nZhKrV2HTGlOivwm7Cz1izYasU';
+        const MAIN_GID = '1021457796';
+        const FEEDBACK_GID = '279613400';
+        const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyyXjNKatvezgqZoRxr1yW83LNww_yi9cEwkYKF6PeGdIw7gqSEKC8KwpSOYHuHkCFsxQ/exec';
+        let activeWebhookUrl = DEFAULT_WEBHOOK_URL;
+
+        try {
+            const savedUrl = localStorage.getItem('notongsu_webhook_url_v6_3');
+            if (savedUrl && savedUrl.trim().startsWith('http')) {
+                activeWebhookUrl = savedUrl.trim();
+            }
+            const urlInputEl = document.getElementById('webhookUrlInput');
+            if (urlInputEl) urlInputEl.value = activeWebhookUrl;
+
+            const savedDeleted = JSON.parse(localStorage.getItem('notongsu_deleted_keys_v6_1') || '[]');
+            savedDeleted.forEach(k => deletedSheetKeys.add(k));
+            const savedPwMap = JSON.parse(localStorage.getItem('notongsu_pw_map_v6_2') || '{}');
+            Object.entries(savedPwMap).forEach(([k, v]) => {
+                if (k && v) userPasswordMap.set(k, String(v));
+            });
+        } catch (err) {}
+
+        window.saveWebhookUrl = function() {
+            const inputEl = document.getElementById('webhookUrlInput');
+            if (!inputEl) return;
+            const newUrl = inputEl.value.trim();
+            if (!newUrl || !newUrl.startsWith('http')) {
+                alertMessage('올바른 웹앱 URL을 입력해주세요!');
+                return;
+            }
+            activeWebhookUrl = newUrl;
+            try {
+                localStorage.setItem('notongsu_webhook_url_v6_3', activeWebhookUrl);
+            } catch (e) {}
+            const statusEl = document.getElementById('webhookTestStatus');
+            if (statusEl) statusEl.innerText = '✅ 새 웹앱 URL이 저장 및 적용되었습니다.';
+            alertMessage('웹앱 URL이 저장되었습니다!');
+        };
+
+        window.resetWebhookUrl = function() {
+            activeWebhookUrl = DEFAULT_WEBHOOK_URL;
+            const inputEl = document.getElementById('webhookUrlInput');
+            if (inputEl) inputEl.value = DEFAULT_WEBHOOK_URL;
+            try {
+                localStorage.removeItem('notongsu_webhook_url_v6_3');
+            } catch (e) {}
+            const statusEl = document.getElementById('webhookTestStatus');
+            if (statusEl) statusEl.innerText = '🔄 기본 웹앱 URL로 복원되었습니다.';
+            alertMessage('기본 웹앱 URL로 복원되었습니다.');
+        };
+
+        function saveUserPassword(sellerId, pw) {
+            if (!sellerId || !pw) return;
+            userPasswordMap.set(String(sellerId).trim(), String(pw).trim());
+            try {
+                const obj = {};
+                userPasswordMap.forEach((v, k) => { obj[k] = v; });
+                localStorage.setItem('notongsu_pw_map_v6_2', JSON.stringify(obj));
+            } catch (err) {}
+        }
+
+        function verifyItemPassword(item, inputPw) {
+            const cleanInput = String(inputPw || '').trim();
+            if (!cleanInput) return false;
+            if (cleanInput === '2103') return true;
+            const itemPw = item.password ? String(item.password).trim() : '';
+            if (itemPw && itemPw === cleanInput) return true;
+            const mappedPw = userPasswordMap.get(String(item.sellerId || '').trim());
+            if (mappedPw && mappedPw === cleanInput) return true;
+            return false;
+        }
+
+        function normalizeItemKey(name) {
+            return String(name || '').trim().replace(/^'+/, '');
+        }
+
+        function makeSheetKey(sellerId, itemName) {
+            return `${String(sellerId || '').trim()}|${normalizeItemKey(itemName)}`;
+        }
+
+        function saveDeletedKeysToStorage() {
+            try {
+                localStorage.setItem('notongsu_deleted_keys_v6_1', JSON.stringify(Array.from(deletedSheetKeys)));
+            } catch (err) {}
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            let s = String(str);
+            if (s.startsWith("'")) s = s.substring(1);
+            return s
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function alertMessage(msg) {
+            const toast = document.getElementById('toastBox');
+            const msgEl = document.getElementById('toastMessage');
+            if (!toast || !msgEl) return;
+            msgEl.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        window.alertMessage = alertMessage;
+
+        window.openModal = function(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) el.classList.remove('hidden');
+        };
+
+        window.closeModal = function(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) el.classList.add('hidden');
+            if (modalId === 'statusModal') document.getElementById('checkPasswordInput').value = '';
+            if (modalId === 'deleteModal') document.getElementById('deletePasswordInput').value = '';
+            if (modalId === 'adminPasswordModal') document.getElementById('adminPasswordInput').value = '';
+            if (modalId === 'reserveCommentModal') document.getElementById('reservePasswordInput').value = '';
+        };
+
+        window.openAdminPasswordModal = function() {
+            document.getElementById('adminPasswordInput').value = '';
+            openModal('adminPasswordModal');
+        };
+
+        window.verifyAdminPassword = function() {
+            const pw = document.getElementById('adminPasswordInput').value;
+            if (pw === '2103') {
+                closeModal('adminPasswordModal');
+                openModal('sheetModal');
+            } else {
+                alertMessage('관리자 비밀번호가 일치하지 않습니다!');
+            }
+        };
+
+        window.togglePriceScale = function(scale) {
+            if (scale === 'thousand') {
+                currentPriceThousand = true;
+                currentPriceTenThousand = false;
+            } else {
+                currentPriceThousand = false;
+                currentPriceTenThousand = true;
+            }
+            updatePriceUnitUI();
+            validatePriceInput();
+        };
+
+        window.togglePriceCurrency = function(currency) {
+            currentPriceCurrency = currency;
+            updatePriceUnitUI();
+            validatePriceInput();
+        };
+
+        function updatePriceUnitUI() {
+            const btnTh = document.getElementById('unitBtn_thousand');
+            const btnTenTh = document.getElementById('unitBtn_tenThousand');
+            const btnAden = document.getElementById('unitBtn_aden');
+            const btnWon = document.getElementById('unitBtn_won');
+            if (!btnTh) return;
+
+            btnTh.className = currentPriceThousand 
+                ? 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition' 
+                : 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+
+            btnTenTh.className = currentPriceTenThousand 
+                ? 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition' 
+                : 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+
+            if (currentPriceCurrency === '아덴') {
+                btnAden.className = 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition';
+                btnWon.className = 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+            } else {
+                btnWon.className = 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition';
+                btnAden.className = 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+            }
+        }
+
+        window.validatePriceInput = function() {
+            const raw = document.getElementById('priceNumInput').value.trim();
+            const errEl = document.getElementById('priceErrorMsg');
+            const hiddenPrice = document.getElementById('price');
+
+            if (!raw) {
+                hiddenPrice.value = '';
+                errEl.classList.add('hidden');
+                return true;
+            }
+
+            if (/[^0-9.]/.test(raw)) {
+                errEl.innerText = '⚠️ 숫자만 입력해주세요!';
+                errEl.classList.remove('hidden');
+                hiddenPrice.value = '';
+                return false;
+            } else {
+                errEl.classList.add('hidden');
+                const num = parseFloat(raw);
+                let scaleStr = '';
+                if (currentPriceThousand) scaleStr = '천';
+                if (currentPriceTenThousand) scaleStr = '만';
+
+                hiddenPrice.value = `${num.toLocaleString('ko-KR')}${scaleStr} ${currentPriceCurrency}`;
+                return true;
+            }
+        };
+
+        window.toggleEditPriceScale = function(scale) {
+            if (scale === 'thousand') {
+                editPriceThousand = true;
+                editPriceTenThousand = false;
+            } else {
+                editPriceThousand = false;
+                editPriceTenThousand = true;
+            }
+            updateEditPriceUnitUI();
+            validateEditPriceInput();
+        };
+
+        window.toggleEditPriceCurrency = function(currency) {
+            editPriceCurrency = currency;
+            updateEditPriceUnitUI();
+            validateEditPriceInput();
+        };
+
+        function updateEditPriceUnitUI() {
+            const btnTh = document.getElementById('editUnitBtn_thousand');
+            const btnTenTh = document.getElementById('editUnitBtn_tenThousand');
+            const btnAden = document.getElementById('editUnitBtn_aden');
+            const btnWon = document.getElementById('editUnitBtn_won');
+            if (!btnTh) return;
+
+            btnTh.className = editPriceThousand 
+                ? 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition' 
+                : 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+
+            btnTenTh.className = editPriceTenThousand 
+                ? 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition' 
+                : 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+
+            if (editPriceCurrency === '아덴') {
+                btnAden.className = 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition';
+                btnWon.className = 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+            } else {
+                btnWon.className = 'flex-1 bg-red-600 text-white py-1 rounded text-xs font-bold transition';
+                btnAden.className = 'flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-1 rounded text-xs font-bold transition';
+            }
+        }
+
+        window.validateEditPriceInput = function() {
+            const raw = document.getElementById('editPriceNumInput').value.trim();
+            const errEl = document.getElementById('editPriceErrorMsg');
+            const hiddenPrice = document.getElementById('editPrice');
+
+            if (!raw) {
+                hiddenPrice.value = '';
+                errEl.classList.add('hidden');
+                return true;
+            }
+
+            if (/[^0-9.]/.test(raw)) {
+                errEl.innerText = '⚠️ 숫자만 입력해주세요!';
+                errEl.classList.remove('hidden');
+                hiddenPrice.value = '';
+                return false;
+            } else {
+                errEl.classList.add('hidden');
+                const num = parseFloat(raw);
+                let scaleStr = '';
+                if (editPriceThousand) scaleStr = '천';
+                if (editPriceTenThousand) scaleStr = '만';
+
+                hiddenPrice.value = `${num.toLocaleString('ko-KR')}${scaleStr} ${editPriceCurrency}`;
+                return true;
+            }
+        };
+
+        window.runAdenCalc = function(source) {
+            const rateInput = document.getElementById('calcRatePer10k');
+            const adenInput = document.getElementById('calcAdenAmount');
+            const wonInput = document.getElementById('calcWonAmount');
+            const resultText = document.getElementById('calcResultText');
+
+            const ratePer10k = parseFloat(rateInput.value) || 0;
+
+            if (source === 'rate' || source === 'aden') {
+                const aden10k = parseFloat(adenInput.value) || 0;
+                const won = Math.round(aden10k * ratePer10k);
+                wonInput.value = won > 0 ? won : '';
+                resultText.innerText = `${won.toLocaleString('ko-KR')} 원 (${aden10k.toLocaleString('ko-KR')}만 아덴)`;
+            } else if (source === 'won') {
+                const won = parseFloat(wonInput.value) || 0;
+                const aden10k = ratePer10k > 0 ? Math.round((won / ratePer10k) * 10) / 10 : 0;
+                adenInput.value = aden10k > 0 ? aden10k : '';
+                resultText.innerText = `${won.toLocaleString('ko-KR')} 원 (${aden10k.toLocaleString('ko-KR')}만 아덴)`;
+            }
+        };
+
+        async function sendToGoogleSheet(payload) {
+            const inputEl = document.getElementById('webhookUrlInput');
+            const targetUrl = (inputEl && inputEl.value.trim().startsWith('http')) ? inputEl.value.trim() : activeWebhookUrl;
+            try {
+                await fetch(targetUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                return true;
+            } catch (err) {
+                console.warn('Google Sheet sync warning:', err);
+                return false;
+            }
+        }
+
+        window.testWebhookConnection = async function() {
+            const statusEl = document.getElementById('webhookTestStatus');
+            if (statusEl) statusEl.innerText = '전송 테스트 중...';
+            const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+            await sendToGoogleSheet({
+                sheetType: 'FEEDBACK',
+                type: 'FEEDBACK',
+                targetGid: FEEDBACK_GID,
+                targetSheet: '피드백',
+                author: '관리자(테스트)',
+                content: '웹앱 URL 연동 테스트 신호입니다.',
+                date: nowStr
+            });
+            if (statusEl) statusEl.innerText = `✅ 테스트 신호 전송 완료 (${nowStr})`;
+            alertMessage('테스트 데이터를 전송했습니다.');
+        };
+
+        function parseRawRowToListing(cells, rowIdx) {
+            // 구글 시트 1번 행(첫 번째 헤더 줄, rowIdx === 0)은 무조건 제외
+            if (rowIdx === 0) return null;
+
+            const vals = cells.map(c => {
+                if (c !== null && typeof c === 'object') return String(c.val ?? '').trim();
+                return (c !== null && c !== undefined) ? String(c).trim() : '';
+            });
+            const joined = vals.join(' ');
+
+            const hasStrikethroughMeta = cells.some(c => {
+                if (c && typeof c === 'object' && c.strike) return true;
+                const s = (c && typeof c === 'object') ? String(c.val || '') : String(c || '');
+                return s.includes('삭제됨') || s.includes('취소선') || s.includes('[삭제]') || s.includes('DELETED') || /^~+.*~+$/.test(s);
+            });
+            if (hasStrikethroughMeta || joined.includes('삭제됨') || joined.includes('취소선') || joined.includes('[삭제]')) {
+                return null;
+            }
+
+            if (vals[1] === '피드백' || vals[2] === '피드백' || joined.includes('피드백 내용') || joined.includes('댓글알림') || joined.includes('피드백')) {
+                return null;
+            }
+
+            // 시트 상단 제목(헤더) 키워드가 포함된 행 완벽 차단
+            if (
+                joined.includes('판매/구입') ||
+                joined.includes('물품목록') ||
+                joined.includes('아덴/아이템') ||
+                joined.includes('진행상황') ||
+                ((joined.includes('거래구분') || joined.includes('거래유형') || joined.includes('물품명') || joined.includes('거래일시')) &&
+                (joined.includes('희망가격') || joined.includes('카테고리') || joined.includes('등록혈원') || joined.includes('혈원')))
+            ) {
+                return null;
+            }
+
+            let tradeType = '판매 (팝니다)';
+            let category = 'ITEM';
+            let itemName = '';
+            let quantity = '1';
+            let price = '문의';
+            let sellerId = '';
+            let contactInfo = '';
+            let status = '진행중';
+            let memo = '';
+            let dateStr = '';
+            let comments = [];
+            let password = '';
+
+            if (vals[1] === 'LISTING' || /^\d{4}[.\-\/]/.test(vals[0])) {
+                dateStr = vals[0];
+                tradeType = vals[2] && vals[2].includes('구매') ? '구매 (삽니다)' : '판매 (팝니다)';
+                category = ['ADEN', 'WEAPON', 'ITEM', 'ETC'].includes(vals[3]?.toUpperCase()) ? vals[3].toUpperCase() : 'ITEM';
+                sellerId = vals[4] || '혈원';
+                itemName = normalizeItemKey(vals[5] || '');
+                quantity = vals[6] || '1';
+                price = vals[7] || '문의';
+                contactInfo = vals[8] || sellerId;
+                status = vals[9] || '진행중';
+                memo = vals[10] || '';
+                if (vals[11]) {
+                    try { comments = JSON.parse(vals[11]); } catch(e) {}
+                }
+                password = vals[12] || '';
+            } else {
+                tradeType = (vals[0] && vals[0].includes('구매')) ? '구매 (삽니다)' : '판매 (팝니다)';
+                category = ['ADEN', 'WEAPON', 'ITEM', 'ETC'].includes(vals[1]?.toUpperCase()) ? vals[1].toUpperCase() : 'ITEM';
+                itemName = normalizeItemKey(vals[2] || '');
+                quantity = vals[3] || '1';
+                price = vals[4] || '문의';
+                sellerId = vals[5] || '혈원';
+                contactInfo = vals[6] || sellerId;
+                status = vals[7] || '진행중';
+                memo = vals[8] || '';
+                dateStr = vals[9] || '';
+                if (vals[10]) {
+                    try { comments = JSON.parse(vals[10]); } catch(e) {}
+                }
+                password = vals[11] || '';
+            }
+
+            if (!itemName && category === 'ADEN') {
+                itemName = `${quantity} 아덴`;
+            }
+            if (!itemName || status.includes('삭제')) return null;
+
+            if (sellerId && password) {
+                saveUserPassword(sellerId, password);
+            } else if (sellerId && !password && userPasswordMap.has(sellerId)) {
+                password = userPasswordMap.get(sellerId);
+            }
+
+            const sheetKey = makeSheetKey(sellerId, itemName);
+            if (deletedSheetKeys.has(sheetKey)) return null;
+
+            let parsedTime = Date.now() - (100000 - rowIdx * 1000);
+            if (dateStr) {
+                const normalized = dateStr.replace(/오전/g, 'AM').replace(/오후/g, 'PM').replace(/\.\s*/g, '-').replace(/-$/, '');
+                const t = Date.parse(normalized);
+                if (!isNaN(t)) parsedTime = t;
+            }
+
+            const safeKey = `sheet_${encodeURIComponent(sellerId)}_${encodeURIComponent(itemName)}`.replace(/[^a-zA-Z0-9_]/g, '');
+
+            return {
+                docId: safeKey || `sheet_row_${rowIdx}`,
+                sheetKey,
+                isFromSheet: true,
+                type: 'LISTING',
+                tradeType,
+                category,
+                itemName,
+                quantity,
+                price: price || '문의',
+                sellerId,
+                contactInfo,
+                status,
+                memo,
+                password,
+                date: dateStr,
+                createdAt: parsedTime,
+                comments: Array.isArray(comments) ? comments : []
+            };
+        }
+
+        function fetchGvizByGid(gid) {
+            return new Promise((resolve) => {
+                const cbName = 'gvizCb_' + gid + '_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                const script = document.createElement('script');
+                const timer = setTimeout(() => {
+                    cleanup();
+                    resolve([]);
+                }, 7000);
+
+                function cleanup() {
+                    clearTimeout(timer);
+                    delete window[cbName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
+
+                window[cbName] = function(response) {
+                    cleanup();
+                    if (!response || !response.table || !response.table.rows) {
+                        resolve([]);
+                        return;
+                    }
+                    const rows = response.table.rows.map(r => {
+                        if (!r || !r.c) return [];
+                        return r.c.map(cell => {
+                            if (!cell) return { val: '', strike: false };
+                            const val = cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== undefined && cell.v !== null ? cell.v : '');
+                            const pStr = cell.p ? JSON.stringify(cell.p).toLowerCase() : '';
+                            const strike = pStr.includes('line-through') || pStr.includes('strikethrough') || String(val).includes('삭제됨') || String(val).includes('취소선');
+                            return { val, strike };
+                        });
+                    });
+                    resolve(rows);
+                };
+
+                script.onerror = function() {
+                    cleanup();
+                    resolve([]);
+                };
+
+                script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&headers=0&tqx=responseHandler:${cbName}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        window.fetchFromGoogleSheet = async function(silent = true) {
+            try {
+                const rowsMain = await fetchGvizByGid(MAIN_GID);
+                const rowsDefault = rowsMain.length === 0 ? await fetchGvizByGid('0') : [];
+
+                const parsedList = [];
+                // 각 시트 탭별로 0번째 행(1번 행 헤더)을 제외하고 파싱
+                rowsMain.forEach((r, idx) => {
+                    if (idx === 0) return;
+                    const item = parseRawRowToListing(r, idx);
+                    if (item) parsedList.push(item);
+                });
+                rowsDefault.forEach((r, idx) => {
+                    if (idx === 0) return;
+                    const item = parseRawRowToListing(r, idx);
+                    if (item) parsedList.push(item);
+                });
+
+                sheetListingsCache = parsedList;
+                mergeAndRenderListings();
+
+                if (!silent) {
+                    alertMessage(`${parsedList.length}건의 거래글을 동기화했습니다.`);
+                }
+            } catch (err) {
+                console.warn('Error fetching from Google Sheet:', err);
+                if (!silent) alertMessage('데이터를 불러오는 중 오류가 발생했습니다.');
+            }
+        };
+
+        function isHeaderRowItem(item) {
+            if (!item) return true;
+            const iName = String(item.itemName || '').trim();
+            const sId = String(item.sellerId || '').trim();
+            const price = String(item.price || '').trim();
+            const qty = String(item.quantity || '').trim();
+            if (
+                iName === '판매/구입' ||
+                iName === '물품명' ||
+                iName === '물품목록' ||
+                sId === '물품목록' ||
+                sId === '등록혈원' ||
+                sId === '혈원아이디' ||
+                price === '등록혈원' ||
+                price === '희망가격' ||
+                qty === '아덴/아이템'
+            ) {
+                return true;
+            }
+            return false;
+        }
+
+        function mergeCommentsList(listA = [], listB = []) {
+            const seen = new Set();
+            const merged = [];
+            [...(listA || []), ...(listB || [])].forEach(c => {
+                if (!c || !c.author || !c.text) return;
+                const key = `${c.author}|${c.text}|${c.createdAt || ''}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    merged.push(c);
+                } else {
+                    const existing = merged.find(m => `${m.author}|${m.text}|${m.createdAt || ''}` === key);
+                    if (existing && c.reserved) existing.reserved = true;
+                }
+            });
+            return merged;
+        }
+
+        function mergeAndRenderListings() {
+            const combinedMap = new Map();
+
+            firestoreListings.forEach(item => {
+                if (isHeaderRowItem(item)) return;
+                item.itemName = normalizeItemKey(item.itemName);
+                const key = makeSheetKey(item.sellerId, item.itemName);
+                item.sheetKey = key;
+                if (item.deleted || item.strikethrough || (item.status && item.status.includes('삭제'))) {
+                    deletedSheetKeys.add(key);
+                    return;
+                }
+                if (item.sellerId && item.password) {
+                    saveUserPassword(item.sellerId, item.password);
+                } else if (item.sellerId && !item.password && userPasswordMap.has(item.sellerId)) {
+                    item.password = userPasswordMap.get(item.sellerId);
+                }
+                combinedMap.set(key, item);
+            });
+            saveDeletedKeysToStorage();
+
+            sheetListingsCache.forEach(sl => {
+                if (isHeaderRowItem(sl)) return;
+                sl.itemName = normalizeItemKey(sl.itemName);
+                const key = makeSheetKey(sl.sellerId, sl.itemName);
+                sl.sheetKey = key;
+                if (deletedSheetKeys.has(key) || sl.deleted || sl.strikethrough) return;
+                if (!combinedMap.has(key)) {
+                    combinedMap.set(key, sl);
+                } else {
+                    const existing = combinedMap.get(key);
+                    existing.comments = mergeCommentsList(existing.comments, sl.comments);
+                    if (!existing.password && sl.password) {
+                        existing.password = sl.password;
+                    }
+                }
+            });
+
+            listings = Array.from(combinedMap.values());
+            listings.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+            renderListings();
+            updateStats();
+        }
+
+        window.saveCommentDraft = function(docId) {
+            const authorEl = document.getElementById(`commentAuthor_${docId}`);
+            const textEl = document.getElementById(`commentText_${docId}`);
+            commentDrafts.set(docId, {
+                author: authorEl ? authorEl.value : '',
+                text: textEl ? textEl.value : ''
+            });
+        };
+
+        window.toggleCommentReserveBtn = function(docId, idx) {
+            const el = document.getElementById(`commentAction_${docId}_${idx}`);
+            if (el) {
+                el.classList.toggle('hidden');
+            }
+        };
+
+        window.openCommentReserveModal = function(e, docId, idx) {
+            if (e) e.stopPropagation();
+            const item = listings.find(i => i.docId === docId);
+            if (!item || !item.comments || !item.comments[idx]) return;
+            const c = item.comments[idx];
+
+            document.getElementById('reserveListingDocId').value = docId;
+            document.getElementById('reserveCommentIdx').value = idx;
+            document.getElementById('reservePasswordInput').value = '';
+            document.getElementById('reserveCommentTargetText').innerText = `[${c.author}] 님의 댓글에 대해 거래를 예약중으로 변경합니다.`;
+            openModal('reserveCommentModal');
+        };
+
+        window.confirmCommentReservation = async function() {
+            const docId = document.getElementById('reserveListingDocId').value;
+            const idx = parseInt(document.getElementById('reserveCommentIdx').value, 10);
+            const inputPassword = document.getElementById('reservePasswordInput').value;
+            const item = listings.find(i => i.docId === docId);
+            if (!item || !item.comments || !item.comments[idx]) return;
+
+            if (!verifyItemPassword(item, inputPassword)) {
+                alertMessage('비밀번호가 일치하지 않습니다!');
+                return;
+            }
+
+            const targetComment = item.comments[idx];
+            targetComment.reserved = true;
+            item.status = '예약중';
+            item.reservedBy = targetComment.author;
+
+            try {
+                if (db && auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1', docId);
+                    if (docId.startsWith('sheet_')) {
+                        const { isFromSheet, ...cleanItem } = item;
+                        await setDoc(docRef, cleanItem, { merge: true });
+                    } else if (!docId.startsWith('local_')) {
+                        await updateDoc(docRef, {
+                            status: '예약중',
+                            reservedBy: targetComment.author,
+                            comments: item.comments
+                        });
+                    }
+                } else {
+                    localStorage.setItem('notongsu_listings_v6_1', JSON.stringify(firestoreListings));
+                }
+
+                let sheetItemNameVal = normalizeItemKey(item.itemName);
+                if (sheetItemNameVal.startsWith('+') || sheetItemNameVal.startsWith('-') || sheetItemNameVal.startsWith('=')) {
+                    sheetItemNameVal = "'" + sheetItemNameVal;
+                }
+                await sendToGoogleSheet({
+                    sheetType: 'LISTING',
+                    type: 'LISTING',
+                    targetGid: MAIN_GID,
+                    targetSheet: '거래목록',
+                    tradeType: item.tradeType,
+                    category: item.category,
+                    sellerId: item.sellerId,
+                    originalSellerId: item.sellerId,
+                    itemName: sheetItemNameVal,
+                    originalItemName: normalizeItemKey(item.itemName),
+                    quantity: item.quantity,
+                    price: item.price,
+                    contactInfo: item.contactInfo,
+                    status: item.status,
+                    memo: item.memo,
+                    password: item.password || userPasswordMap.get(item.sellerId) || '',
+                    comments: JSON.stringify(item.comments),
+                    date: item.date
+                });
+
+                renderListings(true);
+                updateStats();
+                closeModal('reserveCommentModal');
+                alertMessage(`[${targetComment.author}] 님과 예약중 상태로 변경되었습니다!`);
+            } catch (err) {
+                console.error("Comment reservation error:", err);
+                alertMessage('예약 상태 변경 중 오류가 발생했습니다.');
+            }
+        };
+
+        window.handleCategoryChange = function() {
+            const cat = document.getElementById('category').value;
+            const itemNameInput = document.getElementById('itemName');
+            const quantityLabel = document.getElementById('quantityLabel');
+            if (cat === 'ADEN') {
+                itemNameInput.value = '아덴 (머니)';
+                quantityLabel.innerText = '아덴 수량 (예: 500만)';
+            } else {
+                if (itemNameInput.value === '아덴 (머니)') itemNameInput.value = '';
+                quantityLabel.innerText = '수량';
+            }
+        };
+
+        function updateStatCardHighlight() {
+            const cardAll = document.getElementById('statCard_ALL');
+            const cardSell = document.getElementById('statCard_SELL');
+            const cardBuy = document.getElementById('statCard_BUY');
+            const cardAden = document.getElementById('statCard_ADEN');
+            if (!cardAll || !cardSell || !cardBuy || !cardAden) return;
+
+            cardAll.classList.remove('ring-2', 'ring-white', 'border-white');
+            cardSell.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
+            cardBuy.classList.remove('ring-2', 'ring-blue-500', 'border-blue-500');
+            cardAden.classList.remove('ring-2', 'ring-amber-400', 'border-amber-400');
+
+            if (currentFilterCategory === 'ADEN' && currentFilterType === 'ALL') {
+                cardAden.classList.add('ring-2', 'ring-amber-400', 'border-amber-400');
+            } else if (currentFilterType.includes('판매')) {
+                cardSell.classList.add('ring-2', 'ring-red-500', 'border-red-500');
+            } else if (currentFilterType.includes('구매')) {
+                cardBuy.classList.add('ring-2', 'ring-blue-500', 'border-blue-500');
+            } else if (currentFilterType === 'ALL' && currentFilterCategory === 'ALL') {
+                cardAll.classList.add('ring-2', 'ring-white', 'border-white');
+            }
+        }
+
+        window.filterByStatCard = function(target) {
+            if (target === 'ALL') {
+                setFilterCategory('ALL');
+                setFilterType('ALL');
+            } else if (target === 'SELL') {
+                setFilterCategory('ALL');
+                setFilterType('판매 (팝니다)');
+            } else if (target === 'BUY') {
+                setFilterCategory('ALL');
+                setFilterType('구매 (삽니다)');
+            } else if (target === 'ADEN') {
+                setFilterType('ALL');
+                setFilterCategory('ADEN');
+            }
+            updateStatCardHighlight();
+        };
+
+        window.setFilterType = function(type) {
+            currentFilterType = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition';
+            });
+            const activeId = type === 'ALL' ? 'filter_ALL' : (type.includes('판매') ? 'filter_SELL' : 'filter_BUY');
+            const activeBtn = document.getElementById(activeId);
+            if (activeBtn) {
+                if (type.includes('판매')) {
+                    activeBtn.className = 'filter-btn bg-red-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-red-900/40 transition';
+                } else if (type.includes('구매')) {
+                    activeBtn.className = 'filter-btn bg-blue-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-blue-900/40 transition';
+                } else {
+                    activeBtn.className = 'filter-btn bg-slate-200 text-slate-950 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition';
+                }
+            }
+            updateStatCardHighlight();
+            renderListings();
+        };
+
+        window.setFilterCategory = function(cat) {
+            currentFilterCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = 'cat-btn bg-slate-800 hover:bg-slate-700 text-slate-400 px-3 py-1.5 rounded-lg text-xs font-medium transition';
+            });
+            const activeBtn = document.getElementById('cat_' + cat);
+            if (activeBtn) {
+                activeBtn.className = 'cat-btn bg-slate-700 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition';
+            }
+            updateStatCardHighlight();
+            renderListings();
+        };
+
+        function updateStats() {
+            const activeListings = listings.filter(i => !i.deleted && !i.strikethrough);
+            document.getElementById('statTotal').innerText = activeListings.length;
+            document.getElementById('statSell').innerText = activeListings.filter(i => i.tradeType && i.tradeType.includes('판매')).length;
+            document.getElementById('statBuy').innerText = activeListings.filter(i => i.tradeType && i.tradeType.includes('구매')).length;
+            document.getElementById('statAden').innerText = activeListings.filter(i => i.category === 'ADEN').length;
+        }
+
+        window.renderListings = function(forceRender = false) {
+            const container = document.getElementById('listingsContainer');
+            if (!container) return;
+
+            const activeEl = document.activeElement;
+            if (!forceRender && activeEl && activeEl.id && (activeEl.id.startsWith('commentAuthor_') || activeEl.id.startsWith('commentText_'))) {
+                listings.forEach(item => {
+                    const listContainer = document.getElementById(`commentsList_${item.docId}`);
+                    const countEl = document.getElementById(`commentsCount_${item.docId}`);
+                    if (countEl) countEl.innerText = `실시간 댓글 (${(item.comments || []).length})`;
+                    if (listContainer) {
+                        listContainer.innerHTML = renderCommentsHtml(item);
+                    }
+                });
+                return;
+            }
+
+            container.querySelectorAll('input[id^="commentAuthor_"], input[id^="commentText_"]').forEach(inp => {
+                const docId = inp.id.replace(/^comment(Author|Text)_/, '');
+                const prev = commentDrafts.get(docId) || { author: '', text: '' };
+                if (inp.id.startsWith('commentAuthor_')) prev.author = inp.value;
+                if (inp.id.startsWith('commentText_')) prev.text = inp.value;
+                commentDrafts.set(docId, prev);
+            });
+
+            const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+            const hideCompleted = document.getElementById('hideCompletedToggle')?.checked || false;
+
+            const filtered = listings.filter(item => {
+                if (item.deleted || item.strikethrough || (item.status && item.status.includes('삭제'))) return false;
+                if (hideCompleted && item.status === '거래완료') return false;
+                if (currentFilterType !== 'ALL' && item.tradeType !== currentFilterType) return false;
+                if (currentFilterCategory !== 'ALL') {
+                    if (currentFilterCategory === 'WEAPON' && item.category !== 'ITEM' && item.category !== 'WEAPON') return false;
+                    if (currentFilterCategory !== 'WEAPON' && item.category !== currentFilterCategory) return false;
+                }
+                if (searchVal) {
+                    const hay = `${item.itemName} ${item.sellerId} ${item.memo || ''} ${item.price}`.toLowerCase();
+                    if (!hay.includes(searchVal)) return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center">
+                        <i class="fa-solid fa-box-open text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-400 font-semibold">조건에 맞는 등록된 거래 물품이 없습니다.</p>
+                        <p class="text-xs text-slate-500 mt-1">상단의 [물품/아덴 등록하기] 버튼을 눌러 첫 거래글을 등록해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                const isSell = item.tradeType && item.tradeType.includes('판매');
+                
+                // 판매(팝니다) vs 구매(삽니다) 카드 배경 및 테두리 확실한 색상 구분
+                const cardTheme = isSell 
+                    ? 'bg-gradient-to-br from-rose-950/60 via-slate-900/95 to-slate-900 border-2 border-red-500/40 hover:border-red-400 shadow-lg shadow-red-950/40' 
+                    : 'bg-gradient-to-br from-blue-950/70 via-slate-900/95 to-slate-900 border-2 border-blue-500/40 hover:border-blue-400 shadow-lg shadow-blue-950/40';
+                
+                const topAccentBar = isSell
+                    ? 'bg-gradient-to-r from-red-600 via-rose-500 to-amber-500'
+                    : 'bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-500';
+
+                const badgeColor = isSell 
+                    ? 'bg-red-600 hover:bg-red-500 text-white border-red-400/50 shadow-sm shadow-red-900/50' 
+                    : 'bg-blue-600 hover:bg-blue-500 text-white border-blue-400/50 shadow-sm shadow-blue-900/50';
+
+                const tradeIcon = isSell ? '<i class="fa-solid fa-tag mr-1"></i>' : '<i class="fa-solid fa-cart-shopping mr-1"></i>';
+                const filterTypeParam = isSell ? '판매 (팝니다)' : '구매 (삽니다)';
+
+                // 카테고리 뱃지 설정 (클릭 시 해당 카테고리 나열)
+                let catFilterCode = 'ETC';
+                let catLabel = '📦 기타/주문서';
+                let catBadgeStyle = 'bg-slate-800/90 hover:bg-slate-700 text-slate-300 border-slate-600';
+                if (item.category === 'ADEN') {
+                    catFilterCode = 'ADEN';
+                    catLabel = '💰 아덴';
+                    catBadgeStyle = 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40';
+                } else if (item.category === 'ITEM' || item.category === 'WEAPON') {
+                    catFilterCode = 'WEAPON';
+                    catLabel = '⚔️ 무기/장비';
+                    catBadgeStyle = 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border-purple-500/40';
+                }
+
+                let statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                if (item.status === '예약중') statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+                if (item.status === '거래완료') statusColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+
+                const draft = commentDrafts.get(item.docId) || { author: '', text: '' };
+                const commentsList = renderCommentsHtml(item);
+
+                return `
+                    <div class="${cardTheme} rounded-2xl overflow-hidden flex flex-col justify-between transition duration-200 group relative">
+                        <!-- 상단 구분 컬러 바 -->
+                        <div class="h-1.5 w-full ${topAccentBar}"></div>
+
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-1.5 mb-3 flex-wrap">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <button type="button" onclick="setFilterType('${filterTypeParam}')" title="클릭 시 ${escapeHtml(item.tradeType)} 목록만 나열" class="text-xs font-extrabold px-2.5 py-1 rounded-lg border ${badgeColor} transition cursor-pointer flex items-center">
+                                            ${tradeIcon}${escapeHtml(item.tradeType)}
+                                        </button>
+                                        <button type="button" onclick="setFilterCategory('${catFilterCode}')" title="클릭 시 ${catLabel} 카테고리만 나열" class="text-[11px] font-bold px-2 py-1 rounded-lg border ${catBadgeStyle} transition cursor-pointer">
+                                            ${catLabel}
+                                        </button>
+                                    </div>
+                                    <button type="button" onclick="openStatusModal('${item.docId}')" class="text-xs font-bold px-2.5 py-1 rounded-lg border ${statusColor} flex items-center gap-1 hover:opacity-80 transition shrink-0">
+                                        <span>${escapeHtml(item.status || '진행중')}</span>
+                                        <i class="fa-solid fa-pen text-[10px]"></i>
+                                    </button>
+                                </div>
+
+                                <h3 class="text-lg font-black text-white mb-3 break-words flex items-center gap-2">
+                                    <span class="w-1.5 h-5 rounded-full ${isSell ? 'bg-red-500' : 'bg-blue-500'} shrink-0"></span>
+                                    <span>${escapeHtml(item.itemName)}</span>
+                                </h3>
+
+                                <div class="space-y-1.5 text-xs mb-4 bg-slate-950/50 border ${isSell ? 'border-red-500/20' : 'border-blue-500/20'} rounded-xl p-3">
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>수량</span>
+                                        <span class="font-bold text-slate-100">${escapeHtml(item.quantity)}</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>희망 가격</span>
+                                        <span class="font-extrabold ${isSell ? 'text-amber-400' : 'text-cyan-300'} text-sm">${escapeHtml(item.price || '문의')}</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>등록 혈원</span>
+                                        <span class="font-bold text-slate-200 flex items-center gap-1">
+                                            <i class="fa-solid fa-user-shield ${isSell ? 'text-red-400' : 'text-blue-400'}"></i> ${escapeHtml(item.sellerId)}
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400 items-center">
+                                        <span>연락처</span>
+                                        <span class="bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-slate-200">${escapeHtml(item.contactInfo)}</span>
+                                    </div>
+                                </div>
+
+                                ${item.memo ? `<div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 mb-4 break-words">${escapeHtml(item.memo)}</div>` : ''}
+                            </div>
+
+                            <div class="pt-3 border-t ${isSell ? 'border-red-500/20' : 'border-blue-500/20'} space-y-2">
+                                <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-2.5">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-[11px] font-bold text-indigo-400 flex items-center gap-1">
+                                            <i class="fa-solid fa-comments"></i> <span id="commentsCount_${item.docId}">실시간 댓글 (${(item.comments || []).length})</span>
+                                        </span>
+                                        <span class="text-[10px] text-slate-500">댓글 클릭 시 예약 가능</span>
+                                    </div>
+                                    <div id="commentsList_${item.docId}" class="max-h-28 overflow-y-auto mb-2 pr-1">
+                                        ${commentsList}
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <input type="text" id="commentAuthor_${item.docId}" value="${escapeHtml(draft.author)}" oninput="saveCommentDraft('${item.docId}')" placeholder="닉네임" class="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-[11px] text-slate-100 focus:outline-none focus:border-red-500">
+                                        <input type="text" id="commentText_${item.docId}" value="${escapeHtml(draft.text)}" oninput="saveCommentDraft('${item.docId}')" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addComment('${item.docId}'); }" placeholder="댓글 입력..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-100 focus:outline-none focus:border-red-500">
+                                        <button type="button" onclick="addComment('${item.docId}')" class="${isSell ? 'bg-red-600 hover:bg-red-500' : 'bg-blue-600 hover:bg-blue-500'} text-white px-2.5 py-1.5 rounded-lg text-xs transition shrink-0">
+                                            <i class="fa-solid fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-1">
+                                    <span class="text-[10px] text-slate-500">${escapeHtml(item.date || '')}</span>
+                                    <button type="button" onclick="openDeleteModal('${item.docId}')" class="text-slate-400 hover:text-red-400 bg-slate-900 hover:bg-slate-950 border border-slate-700 px-2.5 py-1 rounded-lg text-xs transition" title="삭제">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        function renderCommentsHtml(item) {
+            if (!item.comments || item.comments.length === 0) {
+                return '<p class="text-xs text-slate-500 text-center py-1">등록된 댓글이 없습니다.</p>';
+            }
+            return item.comments.map((c, idx) => `
+                <div onclick="toggleCommentReserveBtn('${item.docId}', ${idx})" class="bg-slate-900/80 hover:bg-slate-800/90 p-2 rounded-lg border ${c.reserved ? 'border-blue-500/60 bg-blue-950/20' : 'border-slate-700/50'} mb-1 text-[11px] cursor-pointer transition select-none">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <span class="font-bold text-red-400 mr-1">${escapeHtml(c.author)}:</span>
+                            <span class="text-slate-200">${escapeHtml(c.text)}</span>
+                            ${c.reserved ? '<span class="ml-1.5 px-1.5 py-0.5 text-[9px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded">예약자</span>' : ''}
+                        </div>
+                        <span class="text-[9px] text-slate-500 shrink-0">${escapeHtml(c.createdAt || '')}</span>
+                    </div>
+                    <div id="commentAction_${item.docId}_${idx}" class="hidden mt-2 pt-1.5 border-t border-slate-800 flex justify-end items-center gap-2">
+                        <span class="text-[10px] text-slate-400">이 혈원과 거래하시겠습니까?</span>
+                        <button type="button" onclick="openCommentReserveModal(event, '${item.docId}', ${idx})" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-md text-[10px] font-semibold transition flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-bookmark"></i> 예약
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.submitListing = async function(event) {
+            event.preventDefault();
+
+            let itemNameVal = normalizeItemKey(document.getElementById('itemName').value.trim());
+            if (!validatePriceInput()) {
+                alertMessage('희망 가격에 올바른 숫자를 입력해주세요!');
+                return;
+            }
+
+            let sheetItemNameVal = itemNameVal;
+            if (sheetItemNameVal.startsWith('+') || sheetItemNameVal.startsWith('-') || sheetItemNameVal.startsWith('=')) {
+                sheetItemNameVal = "'" + sheetItemNameVal;
+            }
+
+            const tradeType = document.getElementById('tradeType').value;
+            const category = document.getElementById('category').value;
+            const sellerId = document.getElementById('sellerId').value.trim();
+            const contactInfo = document.getElementById('contactInfo').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
+            let price = document.getElementById('price').value.trim() || '문의';
+            const memo = document.getElementById('memo').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            saveUserPassword(sellerId, password);
+
+            const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+            const sheetKey = makeSheetKey(sellerId, itemNameVal);
+            deletedSheetKeys.delete(sheetKey);
+            saveDeletedKeysToStorage();
+
+            const newItem = {
+                type: 'LISTING',
+                sheetType: 'LISTING',
+                sheetKey,
+                tradeType,
+                category,
+                sellerId,
+                contactInfo,
+                itemName: itemNameVal,
+                quantity,
+                price,
+                memo,
+                password,
+                status: '진행중',
+                date: nowStr,
+                createdAt: Date.now(),
+                comments: []
+            };
+
+            const sheetPayload = {
+                ...newItem,
+                originalSellerId: sellerId,
+                originalItemName: itemNameVal,
+                itemName: sheetItemNameVal,
+                targetGid: MAIN_GID,
+                targetSheet: '거래목록',
+                comments: JSON.stringify([])
+            };
+
+            try {
+                if (db && auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1');
+                    await addDoc(colRef, newItem);
+                } else {
+                    newItem.docId = 'local_' + Date.now();
+                    firestoreListings.unshift(newItem);
+                    localStorage.setItem('notongsu_listings_v6_1', JSON.stringify(firestoreListings));
+                    mergeAndRenderListings();
+                }
+
+                await sendToGoogleSheet(sheetPayload);
+
+                document.getElementById('registerForm').reset();
+                document.getElementById('priceNumInput').value = '';
+                document.getElementById('price').value = '';
+                currentPriceThousand = false;
+                currentPriceTenThousand = true;
+                updatePriceUnitUI();
+                closeModal('registerModal');
+                alertMessage('새 거래 물품이 등록되었습니다!');
+            } catch (err) {
+                console.error('Error adding listing:', err);
+                alertMessage('등록 중 오류가 발생했습니다.');
+            }
+        };
+
+        window.addComment = async function(docId) {
+            const authorEl = document.getElementById(`commentAuthor_${docId}`);
+            const textEl = document.getElementById(`commentText_${docId}`);
+            if (!authorEl || !textEl) return;
+
+            const author = authorEl.value.trim();
+            const text = textEl.value.trim();
+            if (!author || !text) {
+                alertMessage('닉네임과 댓글 내용을 모두 입력해주세요!');
+                return;
+            }
+
+            const item = listings.find(i => i.docId === docId);
+            if (!item) return;
+
+            const nowShort = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            const newComment = { author, text, createdAt: nowShort, reserved: false };
+            item.comments = [...(item.comments || []), newComment];
+
+            textEl.value = '';
+            commentDrafts.set(docId, { author, text: '' });
+
+            const listContainer = document.getElementById(`commentsList_${docId}`);
+            const countEl = document.getElementById(`commentsCount_${docId}`);
+            if (countEl) countEl.innerText = `실시간 댓글 (${item.comments.length})`;
+            if (listContainer) {
+                listContainer.innerHTML = renderCommentsHtml(item);
+                listContainer.scrollTop = listContainer.scrollHeight;
+            }
+
+            try {
+                if (db && auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1', docId);
+                    if (docId.startsWith('sheet_')) {
+                        const { isFromSheet, ...cleanItem } = item;
+                        await setDoc(docRef, cleanItem, { merge: true });
+                    } else if (!docId.startsWith('local_')) {
+                        await updateDoc(docRef, { comments: item.comments });
+                    }
+                } else {
+                    localStorage.setItem('notongsu_listings_v6_1', JSON.stringify(firestoreListings));
+                }
+
+                let sheetItemNameVal = normalizeItemKey(item.itemName);
+                if (sheetItemNameVal.startsWith('+') || sheetItemNameVal.startsWith('-') || sheetItemNameVal.startsWith('=')) {
+                    sheetItemNameVal = "'" + sheetItemNameVal;
+                }
+
+                await sendToGoogleSheet({
+                    sheetType: 'LISTING',
+                    type: 'LISTING',
+                    targetGid: MAIN_GID,
+                    targetSheet: '거래목록',
+                    tradeType: item.tradeType,
+                    category: item.category,
+                    sellerId: item.sellerId,
+                    originalSellerId: item.sellerId,
+                    itemName: sheetItemNameVal,
+                    originalItemName: normalizeItemKey(item.itemName),
+                    quantity: item.quantity,
+                    price: item.price,
+                    contactInfo: item.contactInfo,
+                    status: item.status,
+                    memo: item.memo,
+                    password: item.password || userPasswordMap.get(item.sellerId) || '',
+                    comments: JSON.stringify(item.comments),
+                    date: item.date
+                });
+
+                alertMessage('실시간 댓글이 등록 및 동기화되었습니다.');
+            } catch (err) {
+                console.error('Add comment error:', err);
+                alertMessage('댓글 등록 중 오류가 발생했습니다.');
+            }
+        };
+
+        window.openStatusModal = function(docId) {
+            document.getElementById('targetDocId').value = docId;
+            document.getElementById('checkPasswordInput').value = '';
+            openModal('statusModal');
+        };
+
+        window.updateListingStatus = async function(newStatus) {
+            const docId = document.getElementById('targetDocId').value;
+            const inputPw = document.getElementById('checkPasswordInput').value;
+            const item = listings.find(i => i.docId === docId);
+            if (!item) return;
+
+            if (!verifyItemPassword(item, inputPw)) {
+                alertMessage('비밀번호가 일치하지 않습니다!');
+                return;
+            }
+
+            item.status = newStatus;
+
+            try {
+                if (db && auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1', docId);
+                    if (docId.startsWith('sheet_')) {
+                        const { isFromSheet, ...cleanItem } = item;
+                        await setDoc(docRef, cleanItem, { merge: true });
+                    } else if (!docId.startsWith('local_')) {
+                        await updateDoc(docRef, { status: newStatus });
+                    }
+                } else {
+                    localStorage.setItem('notongsu_listings_v6_1', JSON.stringify(firestoreListings));
+                }
+
+                let sheetItemNameVal = normalizeItemKey(item.itemName);
+                if (sheetItemNameVal.startsWith('+') || sheetItemNameVal.startsWith('-') || sheetItemNameVal.startsWith('=')) {
+                    sheetItemNameVal = "'" + sheetItemNameVal;
+                }
+                await sendToGoogleSheet({
+                    sheetType: 'LISTING',
+                    type: 'LISTING',
+                    targetGid: MAIN_GID,
+                    targetSheet: '거래목록',
+                    tradeType: item.tradeType,
+                    category: item.category,
+                    sellerId: item.sellerId,
+                    originalSellerId: item.sellerId,
+                    itemName: sheetItemNameVal,
+                    originalItemName: normalizeItemKey(item.itemName),
+                    quantity: item.quantity,
+                    price: item.price,
+                    contactInfo: item.contactInfo,
+                    status: newStatus,
+                    memo: item.memo,
+                    password: item.password || userPasswordMap.get(item.sellerId) || '',
+                    comments: JSON.stringify(item.comments || []),
+                    date: item.date
+                });
+
+                renderListings(true);
+                updateStats();
+                closeModal('statusModal');
+                alertMessage(`상태가 [${newStatus}](으)로 변경되었습니다.`);
+            } catch (err) {
+                console.error('Status update error:', err);
+                alertMessage('상태 변경 중 오류가 발생했습니다.');
+            }
+        };
+
+        window.openEditFromStatusModal = function() {
+            const docId = document.getElementById('targetDocId').value;
+            const inputPw = document.getElementById('checkPasswordInput').value;
+            const item = listings.find(i => i.docId === docId);
+            if (!item) return;
+
+            if (!verifyItemPassword(item, inputPw)) {
+                alertMessage('비밀번호가 일치하지 않습니다!');
+                return;
+            }
+
+            if (inputPw && inputPw !== '2103' && !item.password) {
+                item.password = inputPw.trim();
+                saveUserPassword(item.sellerId, item.password);
+            }
+
+            closeModal('statusModal');
+            document.getElementById('editDocId').value = item.docId;
+            document.getElementById('editOriginalSellerId').value = item.sellerId || '';
+            document.getElementById('editOriginalItemName').value = normalizeItemKey(item.itemName || '');
+            document.getElementById('editTradeType').value = item.tradeType || '판매 (팝니다)';
+            document.getElementById('editCategory').value = item.category || 'ITEM';
+            document.getElementById('editSellerId').value = item.sellerId || '';
+            document.getElementById('editContactInfo').value = item.contactInfo || '';
+            
+            let rawItemName = normalizeItemKey(item.itemName || '');
+            document.getElementById('editItemName').value = rawItemName;
+            document.getElementById('editQuantity').value = item.quantity || '1';
+            
+            const pStr = String(item.price || '');
+            let parsedNum = pStr.replace(/[^0-9.]/g, '');
+            document.getElementById('editPriceNumInput').value = parsedNum;
+            
+            editPriceThousand = pStr.includes('천');
+            editPriceTenThousand = pStr.includes('만') || !editPriceThousand;
+            if (pStr.includes('천')) { editPriceThousand = true; editPriceTenThousand = false; }
+            editPriceCurrency = pStr.includes('원') ? '원' : '아덴';
+            updateEditPriceUnitUI();
+            validateEditPriceInput();
+
+            document.getElementById('editMemo').value = item.memo || '';
+            openModal('editModal');
+        };
+
+        window.submitEditListing = async function(e) {
+            e.preventDefault();
+            const docId = document.getElementById('editDocId').value;
+            const originalSellerId = document.getElementById('editOriginalSellerId').value.trim();
+            const originalItemName = normalizeItemKey(document.getElementById('editOriginalItemName').value);
+            const item = listings.find(i => i.docId === docId);
+            if (!item) return;
+
+            if (!validateEditPriceInput()) {
+                alertMessage('희망 가격에 올바른 숫자를 입력해주세요!');
+                return;
+            }
+
+            let editedItemName = normalizeItemKey(document.getElementById('editItemName').value.trim());
+            const oldSheetKey = makeSheetKey(originalSellerId, originalItemName);
+
+            item.tradeType = document.getElementById('editTradeType').value;
+            item.category = document.getElementById('editCategory').value;
+            item.sellerId = document.getElementById('editSellerId').value.trim();
+            item.contactInfo = document.getElementById('editContactInfo').value.trim();
+            item.itemName = editedItemName;
+            item.quantity = document.getElementById('editQuantity').value.trim();
+            item.price = document.getElementById('editPrice').value.trim();
+            item.memo = document.getElementById('editMemo').value.trim();
+            item.sheetKey = makeSheetKey(item.sellerId, item.itemName);
+
+            if (item.password) {
+                saveUserPassword(item.sellerId, item.password);
+            }
+
+            sheetListingsCache.forEach(sl => {
+                if (makeSheetKey(sl.sellerId, sl.itemName) === oldSheetKey) {
+                    sl.tradeType = item.tradeType;
+                    sl.category = item.category;
+                    sl.sellerId = item.sellerId;
+                    sl.contactInfo = item.contactInfo;
+                    sl.itemName = item.itemName;
+                    sl.quantity = item.quantity;
+                    sl.price = item.price;
+                    sl.memo = item.memo;
+                    sl.sheetKey = item.sheetKey;
+                }
+            });
+
+            try {
+                if (db && auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1', docId);
+                    const { isFromSheet, ...cleanItem } = item;
+                    await setDoc(docRef, cleanItem, { merge: true });
+                } else {
+                    localStorage.setItem('notongsu_listings_v6_1', JSON.stringify(firestoreListings));
+                }
+
+                let sheetItemNameVal = item.itemName;
+                if (sheetItemNameVal.startsWith('+') || sheetItemNameVal.startsWith('-') || sheetItemNameVal.startsWith('=')) {
+                    sheetItemNameVal = "'" + sheetItemNameVal;
+                }
+
+                await sendToGoogleSheet({
+                    sheetType: 'LISTING',
+                    type: 'LISTING',
+                    action: 'UPDATE',
+                    targetGid: MAIN_GID,
+                    targetSheet: '거래목록',
+                    originalSellerId: originalSellerId,
+                    originalItemName: originalItemName,
+                    tradeType: item.tradeType,
+                    category: item.category,
+                    sellerId: item.sellerId,
+                    itemName: sheetItemNameVal,
+                    quantity: item.quantity,
+                    price: item.price,
+                    contactInfo: item.contactInfo,
+                    status: item.status,
+                    memo: item.memo,
+                    password: item.password || userPasswordMap.get(item.sellerId) || '',
+                    comments: JSON.stringify(item.comments || []),
+                    date: item.date
+                });
+
+                mergeAndRenderListings();
+                renderListings(true);
+                updateStats();
+                closeModal('editModal');
+                alertMessage('거래글 내용이 기존 항목에 덮어쓰기 수정되었습니다!');
+            } catch (err) {
+                console.error('Edit listing error:', err);
+                alertMessage('수정 중 오류가 발생했습니다.');
+            }
+        };
+
+        window.openDeleteModal = function(docId) {
+            document.getElementById('deleteDocId').value = docId;
+            document.getElementById('deletePasswordInput').value = '';
+            openModal('deleteModal');
+        };
+
+        window.confirmDelete = async function() {
+            const docId = document.getElementById('deleteDocId').value;
+            const inputPw = document.getElementById('deletePasswordInput').value;
+            const item = listings.find(i => i.docId === docId);
+            if (!item) return;
+
+            if (!verifyItemPassword(item, inputPw)) {
+                alertMessage('비밀번호가 일치하지 않습니다!');
+                return;
+            }
+
+            try {
+                const key = makeSheetKey(item.sellerId, item.itemName);
+                deletedSheetKeys.add(key);
+                saveDeletedKeysToStorage();
+
+                const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+                if (db && auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1', docId);
+                    await setDoc(docRef, {
+                        ...item,
+                        sheetKey: key,
+                        status: '삭제됨(취소선)',
+                        deleted: true,
+                        strikethrough: true,
+                        strikeColor: '#ef4444',
+                        deletedAt: nowStr
+                    }, { merge: true });
+                } else {
+                    firestoreListings = firestoreListings.map(i => i.docId === docId ? { ...i, deleted: true, strikethrough: true, status: '삭제됨(취소선)' } : i);
+                    localStorage.setItem('notongsu_listings_v6_1', JSON.stringify(firestoreListings));
+                }
+
+                await sendToGoogleSheet({
+                    sheetType: 'DELETE',
+                    type: 'DELETE',
+                    action: 'STRIKETHROUGH',
+                    targetGid: MAIN_GID,
+                    targetSheet: '거래목록',
+                    docId,
+                    sheetKey: key,
+                    sellerId: item.sellerId,
+                    itemName: item.itemName,
+                    price: item.price,
+                    status: '삭제됨(취소선)',
+                    strikethrough: true,
+                    color: 'red',
+                    date: nowStr
+                });
+
+                sheetListingsCache = sheetListingsCache.filter(i => i.docId !== docId && i.sheetKey !== key);
+                mergeAndRenderListings();
+
+                closeModal('deleteModal');
+                alertMessage('거래글이 삭제 처리되었습니다.');
+            } catch (err) {
+                console.error("Error deleting document:", err);
+                alertMessage('삭제 중 오류가 발생했습니다.');
+            }
+        };
+
+        window.submitFeedback = async function(e) {
+            e.preventDefault();
+            const author = document.getElementById('feedbackAuthor').value.trim();
+            const content = document.getElementById('feedbackContent').value.trim();
+            if (!author || !content) return;
+
+            const nowStr = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+            await sendToGoogleSheet({
+                sheetType: 'FEEDBACK',
+                type: 'FEEDBACK',
+                targetGid: FEEDBACK_GID,
+                targetSheet: '피드백',
+                author,
+                content,
+                date: nowStr
+            });
+
+            document.getElementById('feedbackForm').reset();
+            closeModal('feedbackModal');
+            alertMessage('소중한 피드백이 전달되었습니다!');
+        };
+
+        window.manualRefresh = function() {
+            const icon = document.getElementById('refreshIcon');
+            if (icon) icon.classList.add('fa-spin');
+            fetchFromGoogleSheet(false).finally(() => {
+                setTimeout(() => {
+                    if (icon) icon.classList.remove('fa-spin');
+                }, 600);
+            });
+        };
+
+        function loadFromLocalStorageFallback() {
+            try {
+                const raw = localStorage.getItem('notongsu_listings_v6_1');
+                if (raw) {
+                    firestoreListings = JSON.parse(raw);
+                }
+            } catch (e) {
+                firestoreListings = [];
+            }
+            mergeAndRenderListings();
+        }
+
+        async function initApp() {
+            fetchFromGoogleSheet(true);
+            setInterval(() => fetchFromGoogleSheet(true), 30000);
+
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            const appId = typeof __app_id !== 'undefined' ? __app_id : 'notongsu-default-app';
+                            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'listings_v6_1');
+                            onSnapshot(colRef, (snapshot) => {
+                                firestoreListings = snapshot.docs.map(d => ({
+                                    docId: d.id,
+                                    ...d.data()
+                                }));
+                                mergeAndRenderListings();
+                            }, (err) => {
+                                console.warn('Firestore snapshot fallback:', err);
+                                loadFromLocalStorageFallback();
+                            });
+                        }
+                    });
+                } else {
+                    loadFromLocalStorageFallback();
+                }
+            } catch (err) {
+                console.warn('Firebase init fallback:', err);
+                loadFromLocalStorageFallback();
+            }
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
